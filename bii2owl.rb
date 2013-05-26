@@ -250,8 +250,3 @@ outputRdf = RDF::Writer.open("BiiTrdm019-Catalogue.rdf") do |writer|
   end
 end
 
-outputJson = RDF::Writer.open("BiiTrdm019-Catalogue.json") do |writer|
-  graph.each_statement do |statement|
-    writer << statement
-  end
-end
