@@ -1,6 +1,20 @@
-bii-owl
--------
+bii-tools
+---------
 
-A set of tools for creating OWL ontologies for information requirement models by BII [1].
+A set of tools for to transform data structures based on the BII [1]
+information requirement models (RIM).
+
+Up to now, the following tools are provided:
+
+* bii2owl.rb: A Ruby script for creating OWL ontologies based on the
+  BII IRMs.
+  
+* syntaxbinding.xsl: A XSL-T script for creating the syntax binding
+  specification for a XML Schema Definition (XSD). This scripts works
+  with emantic annotations that have to be incoprated to the XSD. These
+  annotations relate the XML elements and attributes to the
+  corresponding concepts and properties defined in an ontology.
+
+---------
 
 [1] http://www.cenbii.eu
