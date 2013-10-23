@@ -26,22 +26,18 @@ THE SOFTWARE.
 	version="1.0"
 	xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-	xmlns:sb="http://www.bmecat.org/syntaxbinding/2013">
+	xmlns:sb="http://www.bmecat.org/syntaxbinding/2013"
+	xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+	xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
 
 <xsl:output method="text"/>
 <xsl:param name="root">BMECAT</xsl:param>
+<xsl:param name="ontology-file"></xsl:param>
+
+<xsl:variable name="ontology" select="document($ontology-file)" />
 
 <xsl:template match="/">
 	<xsl:apply-templates select="//xsd:element[@name=$root]" />
-</xsl:template>
-
-<xsl:template match="xsd:element[@name='ARTICLE']">
-</xsl:template>
-
-<xsl:template match="xsd:element[@name='T_UPDATE_PRICES']">
-</xsl:template>
-
-<xsl:template match="xsd:element[string(@name)='T_UPDATE_PRODUCTS']">
 </xsl:template>
 
 <xsl:template name="GetFirstToken">
@@ -72,27 +68,51 @@ THE SOFTWARE.
 	<xsl:param name="path" />
 	<xsl:param name="property" />
 	<xsl:param name="remainingProperties" />
+	<xsl:param name="current-concept" select="''" />
 	
 	<!-- Write property binding -->
 	<xsl:if test="$property!=''">
-		<xsl:value-of select="$property" />
-		<xsl:text>;</xsl:text>
-		<xsl:value-of select="$path" />
-		<xsl:text>/</xsl:text>
-		<xsl:choose>
-			<xsl:when test="@ref">
-				<xsl:value-of select="@ref" />
-			</xsl:when>
-			<xsl:otherwise>
-				<xsl:value-of select="@name" />
-			</xsl:otherwise>
-		</xsl:choose>	
-		<xsl:text>
+		
+		<xsl:variable
+			name="property-ns"
+			select="substring-before($property, ':')" />
+			
+		<xsl:variable
+			name="namespace-uri"
+			select="/xsd:schema/xsd:annotation/xsd:appinfo/sb:namespace[@name=$property-ns]" />
+						
+		<xsl:variable
+			name="property-uri"
+			select="
+				concat(
+					$namespace-uri,
+					substring-after($property, ':'))" />
+		
+		<xsl:variable
+			name="property-concept"
+			select="$ontology/rdf:Description[@about=$property-uri]/rdfs:domain/@resource" />
+				
+		<xsl:if test="$property-concept=$current-concept">
+			<xsl:value-of select="$property" />
+			<xsl:text>;</xsl:text>
+			<xsl:value-of select="$path" />
+			<xsl:text>/</xsl:text>
+			<xsl:choose>
+				<xsl:when test="@ref">
+					<xsl:value-of select="@ref" />
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="@name" />
+				</xsl:otherwise>
+			</xsl:choose>	
+			<xsl:text>
 </xsl:text>
+		</xsl:if>
 	</xsl:if>
 
 	<!-- Write remaining property bindings -->
 	<xsl:if test="$remainingProperties!=''">
+		
 		<xsl:variable name="nextProperty">
 			<xsl:call-template name="GetFirstToken">
 				<xsl:with-param
@@ -100,6 +120,7 @@ THE SOFTWARE.
 					select="$remainingProperties" />
 			</xsl:call-template>
 		</xsl:variable>
+		
 		<xsl:call-template name="WritePath">
 			<xsl:with-param name="path" select="$path" />
 			<xsl:with-param
@@ -108,6 +129,9 @@ THE SOFTWARE.
 			<xsl:with-param
 				name="remainingProperties"
 				select="substring-after($remainingProperties, ' ')" />
+			<xsl:with-param
+				name="current-concept"
+				select="$current-concept" />
 		</xsl:call-template>
 	</xsl:if>
 	
@@ -121,6 +145,7 @@ THE SOFTWARE.
 					
 	<!-- Bind the concept -->
 	<xsl:if test="$typeof!=''">
+		
 		<xsl:variable name="predicate">
 			<xsl:if test="contains($typeof, '[')">
 				<xsl:text>[</xsl:text>
@@ -132,14 +157,28 @@ THE SOFTWARE.
 				<xsl:text>]</xsl:text>
 			</xsl:if>
 		</xsl:variable>
+			
 		<xsl:apply-templates select="//xsd:element[@name=$name]">
 			<xsl:with-param name="path" select="$path" />
 			<xsl:with-param name="predicate" select="$predicate" />
+			<xsl:with-param name="current-concept">
+				<xsl:choose>
+					<xsl:when test="contains($typeof, '[')">
+					<xsl:value-of
+						select=" substring-before($typeof, '[')" />
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:value-of select="$typeof" />
+					</xsl:otherwise>
+				</xsl:choose>
+			</xsl:with-param>
 		</xsl:apply-templates>
+		
 	</xsl:if>
 
 	<!-- Bind remaining concepts -->
 	<xsl:if test="$remainingTypeofs!=''">
+		
 		<xsl:variable name="nextTypeof">
 			<xsl:call-template name="GetFirstToken">
 				<xsl:with-param
@@ -147,6 +186,7 @@ THE SOFTWARE.
 					select="$remainingTypeofs" />
 			</xsl:call-template>
 		</xsl:variable>
+		
 		<xsl:call-template name="IterateTypeofs">
 			<xsl:with-param name="name" select="$name" />
 			<xsl:with-param name="typeof" select="$nextTypeof" />
@@ -155,19 +195,18 @@ THE SOFTWARE.
 				select="substring-after($remainingTypeofs, ' ')" />
 			<xsl:with-param name="path" select="$path" />
 		</xsl:call-template>
+		
 	</xsl:if>
 					
 </xsl:template>
 
 <xsl:template match="xsd:element[count(@*[local-name()='property'])=1]">
 	<xsl:param name="path" />
+	<xsl:param name="current-concept" select="''" />
+	
 	<xsl:variable
 		name="properties"
 		select="string(@*[local-name()='property'])" />
-	<xsl:message>
-		Hallo
-		<xsl:value-of select="$properties" />
-	</xsl:message>
 
 	<xsl:call-template name="WritePath">
 		<xsl:with-param name="path" select="$path" />
@@ -177,6 +216,9 @@ THE SOFTWARE.
 		<xsl:with-param
 			name="remainingProperties"
 			select="substring-after($properties, ' ')" />
+		<xsl:with-param
+			name="current-concept"
+			select="$current-concept" />
 	</xsl:call-template>
 	
 </xsl:template>
@@ -184,14 +226,20 @@ THE SOFTWARE.
 <xsl:template match="xsd:element[count(@name)=1 and count(@ref)=0]">
 	<xsl:param name="path" />
 	<xsl:param name="predicate" select="''" />
+	<xsl:param name="current-concept" select="''" />
+	
 	<xsl:variable name="type" select="@type" />
 	<xsl:variable name="name" select="@name" />
+			
 	<xsl:choose>
 		<xsl:when test="xsd:complexType">
 			<xsl:apply-templates select="xsd:complexType">
 				<xsl:with-param
 					name="path"
 					select="concat($path, '/', $name, $predicate)" />
+				<xsl:with-param
+					name="current-concept"
+					select="$current-concept" />
 			</xsl:apply-templates>
 		</xsl:when>
 		<xsl:otherwise>
@@ -200,6 +248,9 @@ THE SOFTWARE.
 					<xsl:with-param
 						name="path"
 						select="concat($path, '/', $name, $predicate)" />
+					<xsl:with-param
+						name="current-concept"
+						select="$current-concept" />
 				</xsl:apply-templates>
 			</xsl:if>
 		</xsl:otherwise>
@@ -208,9 +259,13 @@ THE SOFTWARE.
 
 <xsl:template match="xsd:element[count(@name)=0 and count(@ref)=1]">
 	<xsl:param name="path" />
+	<xsl:param name="current-concept" select="''" />
+	
 	<xsl:variable name="ref" select="@ref" />
+	
 	<xsl:choose>
 		<xsl:when test="count(@*[local-name()='property'])=1">
+			
 			<xsl:variable name="property">
 				<xsl:call-template name="GetFirstToken">
 					<xsl:with-param
@@ -218,6 +273,7 @@ THE SOFTWARE.
 						select="@sb:property" />
 				</xsl:call-template>
 			</xsl:variable>
+			
 			<xsl:call-template name="WritePath">
 				<xsl:with-param name="path" select="$path" />
 				<xsl:with-param
@@ -226,11 +282,16 @@ THE SOFTWARE.
 				<xsl:with-param
 					name="remainingProperties"
 					select="substring-after(@sb:property, ' ')" />
+				<xsl:with-param
+					name="current-concept"
+					select="$current-concept" />
 			</xsl:call-template>
+			
 		</xsl:when>
 		<xsl:otherwise>
 			<xsl:choose>
 				<xsl:when test="@sb:typeof">
+					
 					<xsl:variable name="typeof">
 						<xsl:call-template name="GetFirstToken">
 							<xsl:with-param
@@ -238,6 +299,7 @@ THE SOFTWARE.
 								select="@sb:typeof" />
 						</xsl:call-template>
 					</xsl:variable>
+					
 					<xsl:call-template name="IterateTypeofs">
 						<xsl:with-param name="name" select="$ref" />
 						<xsl:with-param name="typeof" select="$typeof" />
@@ -246,12 +308,16 @@ THE SOFTWARE.
 							select="substring-after(@sb:typeof, ' ')" />
 						<xsl:with-param name="path" select="$path" />
 					</xsl:call-template>
+					
 				</xsl:when>
 				<xsl:otherwise>
 					<xsl:apply-templates select="//xsd:element[@name=$ref]">
 						<xsl:with-param
 							name="path"
 							select="$path" />
+						<xsl:with-param
+							name="current-concept"
+							select="$current-concept" />
 					</xsl:apply-templates>
 				</xsl:otherwise>
 			</xsl:choose> 
@@ -261,6 +327,8 @@ THE SOFTWARE.
 
 <xsl:template match="xsd:complexType|xsd:sequence|xsd:choice">
 	<xsl:param name="path" />
+	<xsl:param name="current-concept" select="''" />
+	
 	<xsl:apply-templates
 		select="
 			xsd:complexType
@@ -268,6 +336,9 @@ THE SOFTWARE.
 				| xsd:choice
 				| xsd:element">
 		<xsl:with-param name="path" select="$path" />
+		<xsl:with-param
+			name="current-concept"
+			select="$current-concept" />
 	</xsl:apply-templates>
 </xsl:template>
 
