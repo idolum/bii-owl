@@ -136,13 +136,14 @@ def isClassDefined(graph, uri)
 end
 
 def writeDataProperty(ontologyUrl, graph, id, domain, text)
+  
   name = getName(text, "")
   usage = getUsage(text, "")
   min = getMinCardinality(text, "0")
   max = getMaxCardinality(text, "0")
-  id = name.gsub(/ /, "_")
+  nid = getId(text, "") + "-" + name.gsub(/ /, "_")
 
-  subject = RDF::URI.new(ontologyUrl + "/" + id)
+  subject = RDF::URI.new(ontologyUrl + nid)
 
   print "  Property " + id + ", " + name + " (" + min + ".." + max + ")\n"
 
@@ -178,11 +179,11 @@ def writeClass(ontologyUrl, graph, id, domain, text)
   usage = getUsage(text, "")
   min = getMinCardinality(text, "0")
   max = getMaxCardinality(text, "0")
-  id = name.gsub(/ /, "_")
+  id = "tir19-" + name.gsub(/ /, "_")
 
   print "  Class " + id + ", " + name + "\n"
 
-  subject = RDF::URI.new(ontologyUrl + "/" + id)
+  subject = RDF::URI.new(ontologyUrl + id)
 
   if not isClassDefined(graph, subject.to_s)
     graph << [subject, RDF.type, RDF::OWL.Class]
@@ -190,7 +191,7 @@ def writeClass(ontologyUrl, graph, id, domain, text)
     graph << [subject, RDF::RDFS.comment, usage]
   end
 
-  property = RDF::URI.new(ontologyUrl + "/" + domain + "_" + id)
+  property = RDF::URI.new(ontologyUrl + domain + "_" + id)
   propertyName = domain + " consists of " + id
   graph << [property, RDF.type, RDF::OWL.ObjectProperty]
   graph << [property, RDF::RDFS.domain, domain]
@@ -216,7 +217,7 @@ def retrieveOntology(ontologyUrl, graph)
 
   stackChildren = Array.new
   stackClass = Array.new
-  domain = RDF::URI.new(ontologyUrl + "/Catalogue")
+  domain = RDF::URI.new(ontologyUrl + "tir19-Catalogue")
   graph << [domain, RDF.type, RDF::OWL.Class]
   graph << [domain, RDF::RDFS.label, "Catalogue"]
 
@@ -254,7 +255,7 @@ def retrieveOntology(ontologyUrl, graph)
   end
 end
 
-ontologyUrl = "http://spec.cenbii.eu/BII2/Trdm019-Catalogue"
+ontologyUrl = "http://spec.cenbii.eu/BII2#"
 
 graph = RDF::Graph.new
 
