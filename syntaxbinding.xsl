@@ -32,15 +32,15 @@ THE SOFTWARE.
 
 <xsl:output method="text"/>
 <xsl:param name="root">BMECAT</xsl:param>
-<xsl:param name="ontology-file"></xsl:param>
+<xsl:param name="ontology-file">BiiTrdm019-Catalogue.rdf</xsl:param>
 
-<xsl:variable name="ontology" select="document($ontology-file)" />
+<xsl:variable name="ontology" select="document('BiiTrdm019-Catalogue.rdf')" />
 
 <xsl:template match="/">
 	<xsl:apply-templates select="//xsd:element[@name=$root]" />
 </xsl:template>
 
-<xsl:template name="GetFirstToken">
+<xsl:template name="get-first-token">
 	<!--
 		Returns the first token from $string or while $string is a
 		whitespace separated tokenlist.
@@ -59,41 +59,62 @@ THE SOFTWARE.
 	</xsl:choose>
 </xsl:template>
 
-<xsl:template name="WritePath">
+<xsl:template name="resolve-curi">
+	<!--
+		Resolves a CURI ($curi) to a complete URI.
+	-->
+	
+	<xsl:param name="curi" select="''" />
+	
+	<xsl:variable
+		name="prefix"
+		select="substring-before($curi, ':')" />
+	
+	<xsl:variable
+		name="namespace-uri"
+		select="/xsd:schema/xsd:annotation/xsd:appinfo/sb:namespace[sb:prefix=$prefix]/sb:uri" />
+
+	<xsl:value-of
+		select="
+			concat(
+				$namespace-uri,
+				substring-after($curi, ':'))" />
+</xsl:template>
+
+<xsl:template name="write-path">
 	<!--
 		Writes the syntax binding XPath for the properties specified
-		in $property and $remainingProperties.
+		in $property and $remaining-properties.
 	-->
 	
 	<xsl:param name="path" />
 	<xsl:param name="property" />
-	<xsl:param name="remainingProperties" />
+	<xsl:param name="remaining-properties" />
 	<xsl:param name="current-concept" select="''" />
 	
 	<!-- Write property binding -->
 	<xsl:if test="$property!=''">
-		
-		<xsl:variable
-			name="property-ns"
-			select="substring-before($property, ':')" />
+					
+		<xsl:variable name="current-concept-uri">
+			<xsl:call-template name="resolve-curi">
+				<xsl:with-param name="curi" select="$current-concept" />
+			</xsl:call-template>
+		</xsl:variable>
+					
+		<xsl:variable name="property-uri">
+			<xsl:call-template name="resolve-curi">
+				<xsl:with-param name="curi" select="$property" />
+			</xsl:call-template>
+		</xsl:variable>
 			
 		<xsl:variable
-			name="namespace-uri"
-			select="/xsd:schema/xsd:annotation/xsd:appinfo/sb:namespace[@name=$property-ns]" />
-						
-		<xsl:variable
-			name="property-uri"
-			select="
-				concat(
-					$namespace-uri,
-					substring-after($property, ':'))" />
-		
-		<xsl:variable
 			name="property-concept"
-			select="$ontology/rdf:Description[@about=$property-uri]/rdfs:domain/@resource" />
-				
-		<xsl:if test="$property-concept=$current-concept">
+			select="$ontology/rdf:RDF/rdf:Description[@rdf:about=$property-uri]/rdfs:domain/@rdf:resource" />
+	
+		<xsl:if test="$property-concept=$current-concept-uri">
 			<xsl:value-of select="$property" />
+			<xsl:text>;</xsl:text>
+			<xsl:value-of select="$current-concept-uri" />
 			<xsl:text>;</xsl:text>
 			<xsl:value-of select="$path" />
 			<xsl:text>/</xsl:text>
@@ -111,24 +132,24 @@ THE SOFTWARE.
 	</xsl:if>
 
 	<!-- Write remaining property bindings -->
-	<xsl:if test="$remainingProperties!=''">
+	<xsl:if test="$remaining-properties!=''">
 		
-		<xsl:variable name="nextProperty">
-			<xsl:call-template name="GetFirstToken">
+		<xsl:variable name="next-property">
+			<xsl:call-template name="get-first-token">
 				<xsl:with-param
 					name="string"
-					select="$remainingProperties" />
+					select="$remaining-properties" />
 			</xsl:call-template>
 		</xsl:variable>
 		
-		<xsl:call-template name="WritePath">
+		<xsl:call-template name="write-path">
 			<xsl:with-param name="path" select="$path" />
 			<xsl:with-param
 				name="property"
-				select="$nextProperty" />
+				select="$next-property" />
 			<xsl:with-param
-				name="remainingProperties"
-				select="substring-after($remainingProperties, ' ')" />
+				name="remaining-properties"
+				select="substring-after($remaining-properties, ' ')" />
 			<xsl:with-param
 				name="current-concept"
 				select="$current-concept" />
@@ -137,10 +158,10 @@ THE SOFTWARE.
 	
 </xsl:template>
 
-<xsl:template name="IterateTypeofs">
+<xsl:template name="iterate-typeofs">
 	<xsl:param name="name" />
 	<xsl:param name="typeof" />
-	<xsl:param name="remainingTypeofs" />
+	<xsl:param name="remaining-typeofs" />
 	<xsl:param name="path" />
 					
 	<!-- Bind the concept -->
@@ -177,22 +198,22 @@ THE SOFTWARE.
 	</xsl:if>
 
 	<!-- Bind remaining concepts -->
-	<xsl:if test="$remainingTypeofs!=''">
+	<xsl:if test="$remaining-typeofs!=''">
 		
 		<xsl:variable name="nextTypeof">
-			<xsl:call-template name="GetFirstToken">
+			<xsl:call-template name="get-first-token">
 				<xsl:with-param
 					name="string"
-					select="$remainingTypeofs" />
+					select="$remaining-typeofs" />
 			</xsl:call-template>
 		</xsl:variable>
 		
-		<xsl:call-template name="IterateTypeofs">
+		<xsl:call-template name="iterate-typeofs">
 			<xsl:with-param name="name" select="$name" />
 			<xsl:with-param name="typeof" select="$nextTypeof" />
 			<xsl:with-param
-				name="remainingTypeofs"
-				select="substring-after($remainingTypeofs, ' ')" />
+				name="remaining-typeofs"
+				select="substring-after($remaining-typeofs, ' ')" />
 			<xsl:with-param name="path" select="$path" />
 		</xsl:call-template>
 		
@@ -208,13 +229,13 @@ THE SOFTWARE.
 		name="properties"
 		select="string(@*[local-name()='property'])" />
 
-	<xsl:call-template name="WritePath">
+	<xsl:call-template name="write-path">
 		<xsl:with-param name="path" select="$path" />
 		<xsl:with-param
 			name="property"
 			select="substring-before($properties, ' ')" />
 		<xsl:with-param
-			name="remainingProperties"
+			name="remaining-properties"
 			select="substring-after($properties, ' ')" />
 		<xsl:with-param
 			name="current-concept"
@@ -243,7 +264,7 @@ THE SOFTWARE.
 			</xsl:apply-templates>
 		</xsl:when>
 		<xsl:otherwise>
-			<xsl:if test="starts-with($type, 'udx')">
+			<xsl:if test="starts-with($type, 'udx') or $type='typeADDRESS'">
 				<xsl:apply-templates select="//xsd:complexType[@name=$type]">
 					<xsl:with-param
 						name="path"
@@ -267,20 +288,20 @@ THE SOFTWARE.
 		<xsl:when test="count(@*[local-name()='property'])=1">
 			
 			<xsl:variable name="property">
-				<xsl:call-template name="GetFirstToken">
+				<xsl:call-template name="get-first-token">
 					<xsl:with-param
 						name="string"
 						select="@sb:property" />
 				</xsl:call-template>
 			</xsl:variable>
 			
-			<xsl:call-template name="WritePath">
+			<xsl:call-template name="write-path">
 				<xsl:with-param name="path" select="$path" />
 				<xsl:with-param
 					name="property"
 					select="$property" />
 				<xsl:with-param
-					name="remainingProperties"
+					name="remaining-properties"
 					select="substring-after(@sb:property, ' ')" />
 				<xsl:with-param
 					name="current-concept"
@@ -293,18 +314,18 @@ THE SOFTWARE.
 				<xsl:when test="@sb:typeof">
 					
 					<xsl:variable name="typeof">
-						<xsl:call-template name="GetFirstToken">
+						<xsl:call-template name="get-first-token">
 							<xsl:with-param
 								name="string"
 								select="@sb:typeof" />
 						</xsl:call-template>
 					</xsl:variable>
 					
-					<xsl:call-template name="IterateTypeofs">
+					<xsl:call-template name="iterate-typeofs">
 						<xsl:with-param name="name" select="$ref" />
 						<xsl:with-param name="typeof" select="$typeof" />
 						<xsl:with-param
-							name="remainingTypeofs"
+							name="remaining-typeofs"
 							select="substring-after(@sb:typeof, ' ')" />
 						<xsl:with-param name="path" select="$path" />
 					</xsl:call-template>
