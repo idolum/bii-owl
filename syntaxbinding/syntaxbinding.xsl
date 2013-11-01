@@ -34,7 +34,7 @@ THE SOFTWARE.
 <xsl:param name="root">BMECAT</xsl:param>
 <xsl:param name="ontology-file">BiiTrdm019-Catalogue.rdf</xsl:param>
 
-<xsl:variable name="ontology" select="document('BiiTrdm019-Catalogue.rdf')" />
+<xsl:variable name="ontology" select="document($ontology-file)" />
 
 <xsl:template match="/">
 	<xsl:apply-templates select="//xsd:element[@name=$root]" />
@@ -86,7 +86,7 @@ THE SOFTWARE.
 		Writes the syntax binding XPath for the properties specified
 		in $property and $remaining-properties.
 	-->
-	
+
 	<xsl:param name="path" />
 	<xsl:param name="property" />
 	<xsl:param name="remaining-properties" />
@@ -100,6 +100,7 @@ THE SOFTWARE.
 				<xsl:with-param name="curi" select="$current-concept" />
 			</xsl:call-template>
 		</xsl:variable>
+		
 					
 		<xsl:variable name="property-uri">
 			<xsl:call-template name="resolve-curi">
@@ -110,7 +111,7 @@ THE SOFTWARE.
 		<xsl:variable
 			name="property-concept"
 			select="$ontology/rdf:RDF/rdf:Description[@rdf:about=$property-uri]/rdfs:domain/@rdf:resource" />
-	
+			
 		<xsl:if test="$property-concept=$current-concept-uri">
 			<xsl:value-of select="$property" />
 			<xsl:text>;</xsl:text>
@@ -178,22 +179,43 @@ THE SOFTWARE.
 				<xsl:text>]</xsl:text>
 			</xsl:if>
 		</xsl:variable>
-			
-		<xsl:apply-templates select="//xsd:element[@name=$name]">
-			<xsl:with-param name="path" select="$path" />
-			<xsl:with-param name="predicate" select="$predicate" />
-			<xsl:with-param name="current-concept">
-				<xsl:choose>
-					<xsl:when test="contains($typeof, '[')">
-					<xsl:value-of
-						select=" substring-before($typeof, '[')" />
-					</xsl:when>
-					<xsl:otherwise>
-						<xsl:value-of select="$typeof" />
-					</xsl:otherwise>
-				</xsl:choose>
-			</xsl:with-param>
-		</xsl:apply-templates>
+		
+		<xsl:choose>
+			<xsl:when test="@ref">
+				<xsl:apply-templates select="//xsd:element[@name=$name]">
+					<xsl:with-param name="path" select="$path" />
+					<xsl:with-param name="predicate" select="$predicate" />
+					<xsl:with-param name="current-concept">
+						<xsl:choose>
+							<xsl:when test="contains($typeof, '[')">
+							<xsl:value-of
+								select=" substring-before($typeof, '[')" />
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:value-of select="$typeof" />
+							</xsl:otherwise>
+						</xsl:choose>
+					</xsl:with-param>
+				</xsl:apply-templates>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:apply-templates select="xsd:complexType">
+					<xsl:with-param name="path" select="$path" />
+					<xsl:with-param name="predicate" select="$predicate" />
+					<xsl:with-param name="current-concept">
+						<xsl:choose>
+							<xsl:when test="contains($typeof, '[')">
+							<xsl:value-of
+								select=" substring-before($typeof, '[')" />
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:value-of select="$typeof" />
+							</xsl:otherwise>
+						</xsl:choose>
+					</xsl:with-param>
+				</xsl:apply-templates>				
+			</xsl:otherwise>
+		</xsl:choose>
 		
 	</xsl:if>
 
@@ -252,30 +274,82 @@ THE SOFTWARE.
 	<xsl:variable name="type" select="@type" />
 	<xsl:variable name="name" select="@name" />
 			
+	<xsl:if test="count(@*[local-name()='property'])=1">
+
+		<xsl:variable name="property">
+			<xsl:call-template name="get-first-token">
+				<xsl:with-param
+					name="string"
+					select="@sb:property" />
+			</xsl:call-template>
+		</xsl:variable>
+		
+		<xsl:call-template name="write-path">
+			<xsl:with-param name="path" select="$path" />
+			<xsl:with-param
+				name="property"
+				select="$property" />
+			<xsl:with-param
+				name="remaining-properties"
+				select="substring-after(@sb:property, ' ')" />
+			<xsl:with-param
+				name="current-concept"
+				select="$current-concept" />
+		</xsl:call-template>
+		
+	</xsl:if>
+	
 	<xsl:choose>
-		<xsl:when test="xsd:complexType">
-			<xsl:apply-templates select="xsd:complexType">
+		<xsl:when test="@sb:typeof">
+			
+			<xsl:variable name="typeof">
+				<xsl:call-template name="get-first-token">
+					<xsl:with-param
+						name="string"
+						select="@sb:typeof" />
+				</xsl:call-template>
+			</xsl:variable>
+			
+			<xsl:call-template name="iterate-typeofs">
+				<xsl:with-param name="name" select="$name" />
+				<xsl:with-param name="typeof" select="$typeof" />
+				<xsl:with-param
+					name="remaining-typeofs"
+					select="substring-after(@sb:typeof, ' ')" />
 				<xsl:with-param
 					name="path"
 					select="concat($path, '/', $name, $predicate)" />
-				<xsl:with-param
-					name="current-concept"
-					select="$current-concept" />
-			</xsl:apply-templates>
+			</xsl:call-template>
+			
 		</xsl:when>
 		<xsl:otherwise>
-			<xsl:if test="starts-with($type, 'udx') or $type='typeADDRESS'">
-				<xsl:apply-templates select="//xsd:complexType[@name=$type]">
-					<xsl:with-param
-						name="path"
-						select="concat($path, '/', $name, $predicate)" />
-					<xsl:with-param
-						name="current-concept"
-						select="$current-concept" />
-				</xsl:apply-templates>
-			</xsl:if>
+			<xsl:choose>
+				<xsl:when test="xsd:complexType">
+					<xsl:apply-templates select="xsd:complexType">
+						<xsl:with-param
+							name="path"
+							select="concat($path, '/', $name, $predicate)" />
+						<xsl:with-param
+							name="current-concept"
+							select="$current-concept" />
+					</xsl:apply-templates>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:if test="starts-with($type, 'udx') or $type='typeADDRESS'">
+						<xsl:apply-templates select="//xsd:complexType[@name=$type]">
+							<xsl:with-param
+								name="path"
+								select="concat($path, '/', $name, $predicate)" />
+							<xsl:with-param
+								name="current-concept"
+								select="$current-concept" />
+						</xsl:apply-templates>
+					</xsl:if>
+				</xsl:otherwise>
+			</xsl:choose>
 		</xsl:otherwise>
 	</xsl:choose>
+		
 </xsl:template>
 
 <xsl:template match="xsd:element[count(@name)=0 and count(@ref)=1]">
@@ -348,8 +422,9 @@ THE SOFTWARE.
 
 <xsl:template match="xsd:complexType|xsd:sequence|xsd:choice">
 	<xsl:param name="path" />
+	<xsl:param name="predicate" select="''" />
 	<xsl:param name="current-concept" select="''" />
-	
+
 	<xsl:apply-templates
 		select="
 			xsd:complexType
@@ -357,6 +432,7 @@ THE SOFTWARE.
 				| xsd:choice
 				| xsd:element">
 		<xsl:with-param name="path" select="$path" />
+		<xsl:with-param name="predicate" select="$predicate" />
 		<xsl:with-param
 			name="current-concept"
 			select="$current-concept" />
