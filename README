@@ -2,7 +2,7 @@ bii-tools
 ---------
 
 A set of tools for to transform data structures based on the BII [1]
-information requirement models (RIM).
+information requirement models (IRM).
 
 Up to now, the following tools are provided:
 
