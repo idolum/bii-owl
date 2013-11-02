@@ -38,6 +38,12 @@ THE SOFTWARE.
   <rdf:Description rdf:about="http://spec.cenbii.eu/BII2#tir19-ClassB">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
   </rdf:Description>
+  <rdf:Description rdf:about="http://spec.cenbii.eu/BII2#tir19-ClassC">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://spec.cenbii.eu/BII2#tir19-ClassD">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
   <rdf:Description rdf:about="http://spec.cenbii.eu/BII2#tir19-001-Id">
     <ns0:domain xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://spec.cenbii.eu/BII2#tir19-Class"/>
   </rdf:Description>
@@ -49,5 +55,11 @@ THE SOFTWARE.
   </rdf:Description>
   <rdf:Description rdf:about="http://spec.cenbii.eu/BII2#tir19-004-IdB">
     <ns0:domain xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://spec.cenbii.eu/BII2#tir19-ClassB"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://spec.cenbii.eu/BII2#tir19-005-IdC">
+    <ns0:domain xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://spec.cenbii.eu/BII2#tir19-ClassC"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://spec.cenbii.eu/BII2#tir19-006-IdD">
+    <ns0:domain xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://spec.cenbii.eu/BII2#tir19-ClassD"/>
   </rdf:Description>
 </rdf:RDF>

@@ -88,6 +88,20 @@ class Property < Test::Unit::TestCase
 		assert_equal tokens[5], "/ROOT/ELEMENT_CONCEPT_1[ELEMENT_PREDICATE='b']/ELEMENT_CONCEPT_2/ELEMENT_PROPERTY"
 	end
 	
+	def assert_id_nested2(result)
+		tokens = result.split(/[;\n]/)
+
+		assert_equal result.lines.count, 2
+		
+		assert_equal tokens[0], "bii:tir19-005-IdC"
+		assert_equal tokens[1], "http://spec.cenbii.eu/BII2#tir19-ClassC"
+		assert_equal tokens[2], "/ROOT/ELEMENT_CONCEPT_1[ELEMENT_PREDICATE='a']/ELEMENT_CONCEPT_2/ELEMENT_PROPERTY"
+		
+		assert_equal tokens[3], "bii:tir19-006-IdD"
+		assert_equal tokens[4], "http://spec.cenbii.eu/BII2#tir19-ClassD"
+		assert_equal tokens[5], "/ROOT/ELEMENT_CONCEPT_1[ELEMENT_PREDICATE='b']/ELEMENT_CONCEPT_2/ELEMENT_PROPERTY"
+	end
+	
 	def test_property_reference
 		out = do_xslt("data/property_reference.xsd")
 		assert_id_only(out)
@@ -126,5 +140,10 @@ class Property < Test::Unit::TestCase
 	def test_property_reference_reuse_nested
 		out = do_xslt("data/property_reference_reuse_nested.xsd")
 		assert_id_nested(out);
+	end
+	
+	def test_property_nested
+		out = do_xslt("data/property_nested_concept.xsd")
+		assert_id_nested2(out);
 	end
 end
