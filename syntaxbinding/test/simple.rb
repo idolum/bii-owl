@@ -36,13 +36,47 @@ class Property < Test::Unit::TestCase
 		return xslt.serve;
 	end
 	
+	def assert_id_only(result)
+		tokens = result.split(/[;\n]/)
+		
+		assert_equal result.lines.count, 1
+		
+		assert_equal tokens[0], "bii:tir19-001-Id"
+		assert_equal tokens[1], "http://spec.cenbii.eu/BII2#tir19-Class"
+		assert_equal tokens[2], "/ROOT/ELEMENT_CONCEPT/ELEMENT_PROPERTY"
+	end
+	
+	def assert_id_name(result)
+		tokens = result.split(/[;\n]/)
+		
+		assert_equal result.lines.count, 2
+		
+		assert_equal tokens[0], "bii:tir19-001-Id"
+		assert_equal tokens[1], "http://spec.cenbii.eu/BII2#tir19-Class"
+		assert_equal tokens[2], "/ROOT/ELEMENT_CONCEPT/ELEMENT_PROPERTY_1"
+		
+		assert_equal tokens[3], "bii:tir19-002-Name"
+		assert_equal tokens[4], "http://spec.cenbii.eu/BII2#tir19-Class"
+		assert_equal tokens[5], "/ROOT/ELEMENT_CONCEPT/ELEMENT_PROPERTY_2"
+	end
+	
 	def test_property_reference
 		out = do_xslt("data/property_reference.xsd")
-		assert_equal out, "bii:tir19-001-Id;http://spec.cenbii.eu/BII2#tir19-Class;/ROOT/ELEMENT_CONCEPT/ELEMENT_PROPERTY\n"
+		assert_id_only(out)
 	end
 	
 	def test_property_noreference
 		out = do_xslt("data/property_noreference.xsd")
-		assert_equal out, "bii:tir19-001-Id;http://spec.cenbii.eu/BII2#tir19-Class;/ROOT/ELEMENT_CONCEPT/ELEMENT_PROPERTY\n"
+		assert_id_only(out)
+	end
+	
+	def test_property_two
+		out = do_xslt("data/property_two.xsd")
+		assert_id_name(out)
+	end
+	
+	def test_property_type_noreference
+		out = do_xslt("data/property_type_noreference.xsd")
+		assert_id_only(out);
 	end
 end

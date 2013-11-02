@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 The MIT License (MIT)
 
@@ -22,20 +22,33 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -->
-<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
-  <rdf:Description rdf:about="http://spec.cenbii.eu/BII2#">
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Ontology"/>
-  </rdf:Description>
-  <rdf:Description rdf:about="http://spec.cenbii.eu/BII2#">
-    <ns0:versionIRI xmlns:ns0="http://www.w3.org/2002/07/owl#" rdf:resource="http://spec.cenbii.eu/BII2#/0"/>
-  </rdf:Description>
-  <rdf:Description rdf:about="http://spec.cenbii.eu/BII2#tir19-Class">
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
-  </rdf:Description>
-  <rdf:Description rdf:about="http://spec.cenbii.eu/BII2#tir19-001-Id">
-    <ns0:domain xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://spec.cenbii.eu/BII2#tir19-Class"/>
-  </rdf:Description>
-  <rdf:Description rdf:about="http://spec.cenbii.eu/BII2#tir19-002-Name">
-    <ns0:domain xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://spec.cenbii.eu/BII2#tir19-Class"/>
-  </rdf:Description>
-</rdf:RDF>
+<xsd:schema
+	targetNamespace="http://www.bmecat.org/test"
+	xmlns="http://www.bmecat.org/test"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns:sb="http://www.bmecat.org/syntaxbinding/2013"
+	xmlns:bii="http://spec.cenbii.eu/BII2"
+	elementFormDefault="qualified">
+	<xsd:annotation>
+		<xsd:appinfo>
+			<sb:namespace>
+				<sb:prefix>bii</sb:prefix>
+				<sb:uri>http://spec.cenbii.eu/BII2#</sb:uri>
+			</sb:namespace>
+		</xsd:appinfo>
+	</xsd:annotation>
+	<xsd:element name="ELEMENT_PROPERTY" type="xsd:string" sb:property="bii:tir19-001-Id"/>
+	<xsd:complexType name="typeELEMENT_CONCEPT">
+		<xsd:sequence>
+			<xsd:element ref="ELEMENT_PROPERTY" />
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="ROOT">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="ELEMENT_CONCEPT" type="typeELEMENT_CONCEPT" sb:typeof="bii:tir19-Class" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+</xsd:schema>
+

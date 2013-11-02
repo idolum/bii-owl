@@ -198,6 +198,24 @@ THE SOFTWARE.
 					</xsl:with-param>
 				</xsl:apply-templates>
 			</xsl:when>
+			<xsl:when test="@type">
+				<xsl:variable name="type" select="@type" />
+				<xsl:apply-templates select="//xsd:complexType[@name=$type]">
+					<xsl:with-param name="path" select="$path" />
+					<xsl:with-param name="predicate" select="$predicate" />
+					<xsl:with-param name="current-concept">
+						<xsl:choose>
+							<xsl:when test="contains($typeof, '[')">
+							<xsl:value-of
+								select=" substring-before($typeof, '[')" />
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:value-of select="$typeof" />
+							</xsl:otherwise>
+						</xsl:choose>
+					</xsl:with-param>
+				</xsl:apply-templates>
+			</xsl:when>
 			<xsl:otherwise>
 				<xsl:apply-templates select="xsd:complexType">
 					<xsl:with-param name="path" select="$path" />
