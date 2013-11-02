@@ -32,10 +32,16 @@ THE SOFTWARE.
   <rdf:Description rdf:about="http://spec.cenbii.eu/BII2#tir19-Class">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
   </rdf:Description>
+  <rdf:Description rdf:about="http://spec.cenbii.eu/BII2#tir19-ClassA">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
   <rdf:Description rdf:about="http://spec.cenbii.eu/BII2#tir19-001-Id">
     <ns0:domain xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://spec.cenbii.eu/BII2#tir19-Class"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://spec.cenbii.eu/BII2#tir19-002-Name">
     <ns0:domain xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://spec.cenbii.eu/BII2#tir19-Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://spec.cenbii.eu/BII2#tir19-003-IdA">
+    <ns0:domain xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://spec.cenbii.eu/BII2#tir19-ClassA"/>
   </rdf:Description>
 </rdf:RDF>
