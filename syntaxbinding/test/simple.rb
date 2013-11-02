@@ -79,4 +79,9 @@ class Property < Test::Unit::TestCase
 		out = do_xslt("data/property_type_noreference.xsd")
 		assert_id_only(out);
 	end
+	
+	def test_property_type_reference
+		out = do_xslt("data/property_type_reference.xsd")
+		assert_id_only(out);
+	end
 end
