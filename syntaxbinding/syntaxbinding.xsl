@@ -159,15 +159,65 @@ THE SOFTWARE.
 	
 </xsl:template>
 
+<xsl:template name="is-part-of">
+	<xsl:param name="super-concept" />
+	<xsl:param name="sub-concept" />
+	
+	<xsl:variable name="super-concept-uri">
+		<xsl:call-template name="resolve-curi">
+			<xsl:with-param name="curi" select="$super-concept" />
+		</xsl:call-template>
+	</xsl:variable>
+	
+	<xsl:variable name="sub-concept-uri">
+		<xsl:call-template name="resolve-curi">
+			<xsl:with-param name="curi" select="$sub-concept" />
+		</xsl:call-template>
+	</xsl:variable>
+	
+	<xsl:variable
+		name="by-range"
+		select="
+			$ontology/rdf:RDF/rdf:Description[
+				rdfs:range/@rdf:resource=$sub-concept-uri
+			]/@rdf:about" />
+	
+	<xsl:choose>
+		<xsl:when test="$super-concept=''">
+			<xsl:text>true</xsl:text>
+		</xsl:when>
+		<xsl:when test="$ontology/rdf:RDF/rdf:Description[@rdf:about=$by-range]/rdf:type[@rdf:resource='http://www.w3.org/2002/07/owl#ObjectProperty']">
+			<!--
+				$by-range is an object property with $sub-concept as
+				range. Now check, if $super-concept is a domain of this
+				object property.
+			-->
+			<xsl:variable
+				name="by-domain"
+				select="
+					$ontology/rdf:RDF/rdf:Description[
+						rdfs:domain/@rdf:resource=$super-concept-uri
+							and @rdf:about=$by-range
+					]/@rdf:about" />
+			<xsl:if test="$by-domain=$by-range">
+				<xsl:text>true</xsl:text>
+			</xsl:if>
+		</xsl:when>
+		<xsl:otherwise />
+	</xsl:choose>
+	
+</xsl:template>
+
 <xsl:template name="iterate-typeofs">
 	<xsl:param name="name" />
 	<xsl:param name="typeof" />
 	<xsl:param name="remaining-typeofs" />
 	<xsl:param name="path" />
+	<xsl:param name="current-concept" />
 					
 	<!-- Bind the concept -->
 	<xsl:if test="$typeof!=''">
-		
+			
 		<xsl:variable name="predicate">
 			<xsl:if test="contains($typeof, '[')">
 				<xsl:text>[</xsl:text>
@@ -180,60 +230,75 @@ THE SOFTWARE.
 			</xsl:if>
 		</xsl:variable>
 		
-		<xsl:choose>
-			<xsl:when test="@ref">
-				<xsl:apply-templates select="//xsd:element[@name=$name]">
-					<xsl:with-param name="path" select="$path" />
-					<xsl:with-param name="predicate" select="$predicate" />
-					<xsl:with-param name="current-concept">
-						<xsl:choose>
-							<xsl:when test="contains($typeof, '[')">
-							<xsl:value-of
-								select=" substring-before($typeof, '[')" />
-							</xsl:when>
-							<xsl:otherwise>
-								<xsl:value-of select="$typeof" />
-							</xsl:otherwise>
-						</xsl:choose>
-					</xsl:with-param>
-				</xsl:apply-templates>
-			</xsl:when>
-			<xsl:when test="@type">
-				<xsl:variable name="type" select="@type" />
-				<xsl:apply-templates select="//xsd:complexType[@name=$type]">
-					<xsl:with-param name="path" select="$path" />
-					<xsl:with-param name="predicate" select="$predicate" />
-					<xsl:with-param name="current-concept">
-						<xsl:choose>
-							<xsl:when test="contains($typeof, '[')">
-							<xsl:value-of
-								select=" substring-before($typeof, '[')" />
-							</xsl:when>
-							<xsl:otherwise>
-								<xsl:value-of select="$typeof" />
-							</xsl:otherwise>
-						</xsl:choose>
-					</xsl:with-param>
-				</xsl:apply-templates>
-			</xsl:when>
-			<xsl:otherwise>
-				<xsl:apply-templates select="xsd:complexType">
-					<xsl:with-param name="path" select="$path" />
-					<xsl:with-param name="predicate" select="$predicate" />
-					<xsl:with-param name="current-concept">
-						<xsl:choose>
-							<xsl:when test="contains($typeof, '[')">
-							<xsl:value-of
-								select=" substring-before($typeof, '[')" />
-							</xsl:when>
-							<xsl:otherwise>
-								<xsl:value-of select="$typeof" />
-							</xsl:otherwise>
-						</xsl:choose>
-					</xsl:with-param>
-				</xsl:apply-templates>				
-			</xsl:otherwise>
-		</xsl:choose>
+		<xsl:variable name="new-current-concept">
+			<xsl:choose>
+				<xsl:when test="contains($typeof, '[')">
+				<xsl:value-of
+					select=" substring-before($typeof, '[')" />
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="$typeof" />
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+		
+		<xsl:variable name="in-range">
+			<xsl:call-template name="is-part-of">
+				<xsl:with-param
+					name="super-concept"
+					select="$current-concept" />
+				<xsl:with-param
+					name="sub-concept"
+					select="$new-current-concept" />
+			</xsl:call-template>
+		</xsl:variable>
+						
+		<xsl:if test="$in-range='true'">
+			<xsl:choose>
+				<xsl:when test="@ref">
+					<xsl:apply-templates select="//xsd:element[@name=$name]">
+						<xsl:with-param name="path" select="$path" />
+						<xsl:with-param name="predicate" select="$predicate" />
+						<xsl:with-param name="current-concept" select="$new-current-concept" />
+					</xsl:apply-templates>
+				</xsl:when>
+				<xsl:when test="@type">
+					<xsl:variable name="type" select="@type" />
+					<xsl:apply-templates select="//xsd:complexType[@name=$type]">
+						<xsl:with-param name="path" select="$path" />
+						<xsl:with-param name="predicate" select="$predicate" />
+						<xsl:with-param name="current-concept">
+							<xsl:choose>
+								<xsl:when test="contains($typeof, '[')">
+								<xsl:value-of
+									select=" substring-before($typeof, '[')" />
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:value-of select="$typeof" />
+								</xsl:otherwise>
+							</xsl:choose>
+						</xsl:with-param>
+					</xsl:apply-templates>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:apply-templates select="xsd:complexType">
+						<xsl:with-param name="path" select="$path" />
+						<xsl:with-param name="predicate" select="$predicate" />
+						<xsl:with-param name="current-concept">
+							<xsl:choose>
+								<xsl:when test="contains($typeof, '[')">
+								<xsl:value-of
+									select=" substring-before($typeof, '[')" />
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:value-of select="$typeof" />
+								</xsl:otherwise>
+							</xsl:choose>
+						</xsl:with-param>
+					</xsl:apply-templates>				
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:if>
 		
 	</xsl:if>
 
@@ -255,6 +320,9 @@ THE SOFTWARE.
 				name="remaining-typeofs"
 				select="substring-after($remaining-typeofs, ' ')" />
 			<xsl:with-param name="path" select="$path" />
+			<xsl:with-param
+				name="current-concept"
+				select="$current-concept" />
 		</xsl:call-template>
 		
 	</xsl:if>
@@ -337,6 +405,9 @@ THE SOFTWARE.
 				<xsl:with-param
 					name="path"
 					select="concat($path, '/', $name, $predicate)" />
+				<xsl:with-param
+					name="current-concept"
+					select="$current-concept" />
 			</xsl:call-template>
 			
 		</xsl:when>
@@ -420,6 +491,9 @@ THE SOFTWARE.
 							name="remaining-typeofs"
 							select="substring-after(@sb:typeof, ' ')" />
 						<xsl:with-param name="path" select="$path" />
+						<xsl:with-param
+							name="current-concept"
+							select="$current-concept" />
 					</xsl:call-template>
 					
 				</xsl:when>
