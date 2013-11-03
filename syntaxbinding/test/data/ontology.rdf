@@ -22,12 +22,14 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -->
-<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+<rdf:RDF
+	xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+	xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
   <rdf:Description rdf:about="http://spec.cenbii.eu/BII2#">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Ontology"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://spec.cenbii.eu/BII2#">
-    <ns0:versionIRI xmlns:ns0="http://www.w3.org/2002/07/owl#" rdf:resource="http://spec.cenbii.eu/BII2#/0"/>
+    <rdfs:versionIRI xmlns:rdfs="http://www.w3.org/2002/07/owl#" rdf:resource="http://spec.cenbii.eu/BII2#/0"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://spec.cenbii.eu/BII2#tir19-Class">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
@@ -45,21 +47,39 @@ THE SOFTWARE.
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://spec.cenbii.eu/BII2#tir19-001-Id">
-    <ns0:domain xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://spec.cenbii.eu/BII2#tir19-Class"/>
+    <rdfs:domain rdf:resource="http://spec.cenbii.eu/BII2#tir19-Class"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://spec.cenbii.eu/BII2#tir19-002-Name">
-    <ns0:domain xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://spec.cenbii.eu/BII2#tir19-Class"/>
+    <rdfs:domain rdf:resource="http://spec.cenbii.eu/BII2#tir19-Class"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://spec.cenbii.eu/BII2#tir19-003-IdA">
-    <ns0:domain xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://spec.cenbii.eu/BII2#tir19-ClassA"/>
+    <rdfs:domain rdf:resource="http://spec.cenbii.eu/BII2#tir19-ClassA"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://spec.cenbii.eu/BII2#tir19-004-IdB">
-    <ns0:domain xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://spec.cenbii.eu/BII2#tir19-ClassB"/>
+    <rdfs:domain rdf:resource="http://spec.cenbii.eu/BII2#tir19-ClassB"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://spec.cenbii.eu/BII2#tir19-005-IdC">
-    <ns0:domain xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://spec.cenbii.eu/BII2#tir19-ClassC"/>
+    <rdfs:domain rdf:resource="http://spec.cenbii.eu/BII2#tir19-ClassC"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://spec.cenbii.eu/BII2#tir19-006-IdD">
-    <ns0:domain xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://spec.cenbii.eu/BII2#tir19-ClassD"/>
+    <rdfs:domain rdf:resource="http://spec.cenbii.eu/BII2#tir19-ClassD"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://spec.cenbii.eu/BII2#tir19-Class_tir19-ClassC">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty" />
+  </rdf:Description>
+  <rdf:Description rdf:about="http://spec.cenbii.eu/BII2#tir19-Class_tir19-ClassC">
+    <rdfs:domain rdf:resource="http://spec.cenbii.eu/BII2#tir19-Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://spec.cenbii.eu/BII2#tir19-Class_tir19-ClassC">
+    <rdfs:range rdf:resource="http://spec.cenbii.eu/BII2#tir19-ClassC"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://spec.cenbii.eu/BII2#tir19-ClassB_tir19-ClassD">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty" />
+  </rdf:Description>
+  <rdf:Description rdf:about="http://spec.cenbii.eu/BII2#tir19-ClassB_tir19-ClassD">
+    <rdfs:domain rdf:resource="http://spec.cenbii.eu/BII2#tir19-ClassB"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://spec.cenbii.eu/BII2#tir19-ClassB_tir19-ClassD">
+    <rdfs:range rdf:resource="http://spec.cenbii.eu/BII2#tir19-ClassD"/>
   </rdf:Description>
 </rdf:RDF>
