@@ -28,7 +28,8 @@ THE SOFTWARE.
 	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
 	xmlns:sb="http://www.bmecat.org/syntaxbinding/2013"
 	xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-	xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+	xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+	xmlns:owl="http://www.w3.org/2002/07/owl#">
 
 <xsl:output method="text"/>
 <xsl:param name="root">BMECAT</xsl:param>
@@ -100,7 +101,6 @@ THE SOFTWARE.
 				<xsl:with-param name="curi" select="$current-concept" />
 			</xsl:call-template>
 		</xsl:variable>
-		
 					
 		<xsl:variable name="property-uri">
 			<xsl:call-template name="resolve-curi">
@@ -111,7 +111,7 @@ THE SOFTWARE.
 		<xsl:variable
 			name="property-concept"
 			select="$ontology/rdf:RDF/rdf:Description[@rdf:about=$property-uri]/rdfs:domain/@rdf:resource" />
-			
+	
 		<xsl:if test="$property-concept=$current-concept-uri">
 			<xsl:value-of select="$property" />
 			<xsl:text>;</xsl:text>
@@ -175,18 +175,59 @@ THE SOFTWARE.
 		</xsl:call-template>
 	</xsl:variable>
 	
-	<xsl:variable
-		name="by-range"
-		select="
-			$ontology/rdf:RDF/rdf:Description[
-				rdfs:range/@rdf:resource=$sub-concept-uri
-			]/@rdf:about" />
-	
+	<xsl:variable name="by-range">
+		<xsl:choose>
+			<xsl:when
+				test="
+					$ontology/rdf:RDF/rdf:Description[
+						rdfs:range/@rdf:resource=$sub-concept-uri
+					]/@rdf:about">
+				<!-- Only one statement on the property -->
+				<xsl:value-of
+					select="
+						$ontology/rdf:RDF/rdf:Description[
+							rdfs:range/@rdf:resource=$sub-concept-uri
+						]/@rdf:about" />
+			</xsl:when>
+			<xsl:otherwise>
+				<!-- More then one statement via rdf:nodeID -->
+				<xsl:variable
+					name="node-id"
+					select="
+						$ontology/rdf:RDF/rdf:Description[
+							owl:onClass/@rdf:resource=$sub-concept-uri
+						]/@rdf:nodeID" />
+				<xsl:value-of
+					select="
+						$ontology/rdf:RDF/rdf:Description[
+							rdfs:range/@rdf:nodeID=$node-id
+						]/@rdf:about" />
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:variable>
+		
 	<xsl:choose>
 		<xsl:when test="$super-concept=''">
+			<!--
+				$super-concept is empty. Empty means the world and
+				everything is part of the world.
+			-->
 			<xsl:text>true</xsl:text>
 		</xsl:when>
-		<xsl:when test="$ontology/rdf:RDF/rdf:Description[@rdf:about=$by-range]/rdf:type[@rdf:resource='http://www.w3.org/2002/07/owl#ObjectProperty']">
+		<xsl:when test="$super-concept=$sub-concept">
+			<!--
+				$super-concept is equal to $sub-concept. Everything
+				is part of itself.
+			-->
+			<xsl:text>true</xsl:text>
+		</xsl:when>
+		<xsl:when
+			test="
+				$ontology/rdf:RDF/rdf:Description[
+					@rdf:about=$by-range
+				]/rdf:type[
+					@rdf:resource='http://www.w3.org/2002/07/owl#ObjectProperty'
+				]">
 			<!--
 				$by-range is an object property with $sub-concept as
 				range. Now check, if $super-concept is a domain of this
@@ -200,6 +241,9 @@ THE SOFTWARE.
 							and @rdf:about=$by-range
 					]/@rdf:about" />
 			<xsl:if test="$by-domain=$by-range">
+				<!--
+					Yes, $sub-concept is part of $super-concept.
+				-->				
 				<xsl:text>true</xsl:text>
 			</xsl:if>
 		</xsl:when>
@@ -214,7 +258,7 @@ THE SOFTWARE.
 	<xsl:param name="remaining-typeofs" />
 	<xsl:param name="path" />
 	<xsl:param name="current-concept" />
-					
+
 	<!-- Bind the concept -->
 	<xsl:if test="$typeof!=''">
 			
@@ -252,7 +296,7 @@ THE SOFTWARE.
 					select="$new-current-concept" />
 			</xsl:call-template>
 		</xsl:variable>
-						
+
 		<xsl:if test="$in-range='true'">
 			<xsl:choose>
 				<xsl:when test="@ref">
@@ -483,7 +527,7 @@ THE SOFTWARE.
 								select="@sb:typeof" />
 						</xsl:call-template>
 					</xsl:variable>
-					
+						
 					<xsl:call-template name="iterate-typeofs">
 						<xsl:with-param name="name" select="$ref" />
 						<xsl:with-param name="typeof" select="$typeof" />

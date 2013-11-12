@@ -146,4 +146,9 @@ class Property < Test::Unit::TestCase
 		out = do_xslt("data/property_nested_concept.xsd")
 		assert_id_nested2(out);
 	end
+	
+	def test_reference_type
+		out = do_xslt("data/property_reference_type.xsd")
+		assert_id_two(out);
+	end
 end
