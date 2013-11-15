@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+The MIT License (MIT)
+
+Copyright (c) 2013 Veit Jahns
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+-->
+<xsd:schema
+	targetNamespace="http://www.bmecat.org/test"
+	xmlns="http://www.bmecat.org/test"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns:sb="http://www.bmecat.org/syntaxbinding/2013"
+	xmlns:bii="http://spec.cenbii.eu/BII2"
+	elementFormDefault="qualified">
+	<xsd:annotation>
+		<xsd:appinfo>
+			<sb:namespace>
+				<sb:prefix>bii</sb:prefix>
+				<sb:uri>http://spec.cenbii.eu/BII2#</sb:uri>
+			</sb:namespace>
+		</xsd:appinfo>
+	</xsd:annotation>
+	<xsd:element name="ELEMENT_PROPERTY" type="xsd:string" />
+	<xsd:element name="ELEMENT_PREDICATE" type="xsd:string" />
+	<xsd:element name="ELEMENT_CONCEPT_3">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="ELEMENT_PROPERTY" sb:property="bii:tir19-005-IdC bii:tir19-006-IdD"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="ELEMENT_CONCEPT_2">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="ELEMENT_CONCEPT_3" sb:typeof="bii:tir19-ClassC bii:tir19-ClassD" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="ELEMENT_CONCEPT_1">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="ELEMENT_CONCEPT_2" sb:typeof="bii:tir19-ClassC bii:tir19-ClassD" />
+				<xsd:element ref="ELEMENT_PREDICATE" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="ROOT">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="ELEMENT_CONCEPT_1" sb:typeof="bii:tir19-Class[ELEMENT_PREDICATE='a'] bii:tir19-ClassB[ELEMENT_PREDICATE='b']"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+</xsd:schema>
+
