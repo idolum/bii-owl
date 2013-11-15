@@ -92,6 +92,7 @@ THE SOFTWARE.
 	<xsl:param name="property" />
 	<xsl:param name="remaining-properties" />
 	<xsl:param name="current-concept" select="''" />
+	<xsl:param name="content" select="''" />
 	
 	<!-- Write property binding -->
 	<xsl:if test="$property!=''">
@@ -132,7 +133,11 @@ THE SOFTWARE.
 				<xsl:otherwise>
 					<xsl:value-of select="@name" />
 				</xsl:otherwise>
-			</xsl:choose>	
+			</xsl:choose>
+			<xsl:if test="$content!=''">
+				<xsl:text>;</xsl:text>
+				<xsl:value-of select="$content" />
+			</xsl:if>
 			<xsl:text>
 </xsl:text>
 		</xsl:if>
@@ -383,6 +388,7 @@ THE SOFTWARE.
 	<xsl:param name="properties" select="''" />
 	<xsl:param name="path" select="''" />
 	<xsl:param name="current-concept" select="''" />
+	<xsl:param name="content" select="''" />
 	
 	<xsl:variable name="property">
 		<xsl:call-template name="get-first-token">
@@ -403,6 +409,9 @@ THE SOFTWARE.
 		<xsl:with-param
 			name="current-concept"
 			select="$current-concept" />
+		<xsl:with-param
+			name="content"
+			select="$content" />
 	</xsl:call-template>
 </xsl:template>
 
@@ -449,6 +458,9 @@ THE SOFTWARE.
 			<xsl:with-param
 				name="current-concept"
 				select="$current-concept" />
+			<xsl:with-param
+				name="content"
+				select="@sb:content" />
 		</xsl:call-template>			
 		
 	</xsl:if>
@@ -528,7 +540,19 @@ THE SOFTWARE.
 				<xsl:with-param
 					name="current-concept"
 					select="$current-concept" />
+				<xsl:with-param
+					name="content"
+					select="@sb:content" />
 			</xsl:call-template>			
+			
+			<xsl:apply-templates select="//xsd:element[@name=$ref]">
+				<xsl:with-param
+					name="path"
+					select="$path" />
+				<xsl:with-param
+					name="current-concept"
+					select="$current-concept" />
+			</xsl:apply-templates>
 			
 		</xsl:when>
 		<xsl:otherwise>
@@ -586,6 +610,9 @@ THE SOFTWARE.
 			<xsl:with-param
 				name="current-concept"
 				select="$current-concept" />
+			<xsl:with-param
+				name="content"
+				select="@sb:content" />
 		</xsl:call-template>		
 	</xsl:if>
 	
