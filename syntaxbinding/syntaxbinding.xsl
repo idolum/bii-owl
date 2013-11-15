@@ -373,6 +373,33 @@ THE SOFTWARE.
 					
 </xsl:template>
 
+<xsl:template name="bind-property">
+	<xsl:param name="properties" select="''" />
+	<xsl:param name="path" select="''" />
+	<xsl:param name="current-concept" select="''" />
+	
+	<xsl:variable name="property">
+		<xsl:call-template name="get-first-token">
+			<xsl:with-param
+				name="string"
+				select="$properties" />
+		</xsl:call-template>
+	</xsl:variable>
+	
+	<xsl:call-template name="write-path">
+		<xsl:with-param name="path" select="$path" />
+		<xsl:with-param
+			name="property"
+			select="$property" />
+		<xsl:with-param
+			name="remaining-properties"
+			select="substring-after($properties, ' ')" />
+		<xsl:with-param
+			name="current-concept"
+			select="$current-concept" />
+	</xsl:call-template>
+</xsl:template>
+
 <xsl:template match="xsd:element[count(@*[local-name()='property'])=1]">
 	<xsl:param name="path" />
 	<xsl:param name="current-concept" select="''" />
@@ -406,26 +433,17 @@ THE SOFTWARE.
 			
 	<xsl:if test="count(@*[local-name()='property'])=1">
 
-		<xsl:variable name="property">
-			<xsl:call-template name="get-first-token">
-				<xsl:with-param
-					name="string"
-					select="@sb:property" />
-			</xsl:call-template>
-		</xsl:variable>
-		
-		<xsl:call-template name="write-path">
-			<xsl:with-param name="path" select="$path" />
+		<xsl:call-template name="bind-property">
+			<xsl:with-param 
+				name="properties"
+				select="@sb:property" />
 			<xsl:with-param
-				name="property"
-				select="$property" />
-			<xsl:with-param
-				name="remaining-properties"
-				select="substring-after(@sb:property, ' ')" />
+				name="path"
+				select="$path" />
 			<xsl:with-param
 				name="current-concept"
 				select="$current-concept" />
-		</xsl:call-template>
+		</xsl:call-template>			
 		
 	</xsl:if>
 	
@@ -492,28 +510,19 @@ THE SOFTWARE.
 	<xsl:variable name="ref" select="@ref" />
 	
 	<xsl:choose>
-		<xsl:when test="count(@*[local-name()='property'])=1">
+		<xsl:when test="@sb:property">
 			
-			<xsl:variable name="property">
-				<xsl:call-template name="get-first-token">
-					<xsl:with-param
-						name="string"
-						select="@sb:property" />
-				</xsl:call-template>
-			</xsl:variable>
-			
-			<xsl:call-template name="write-path">
-				<xsl:with-param name="path" select="$path" />
+			<xsl:call-template name="bind-property">
+				<xsl:with-param 
+					name="properties"
+					select="@sb:property" />
 				<xsl:with-param
-					name="property"
-					select="$property" />
-				<xsl:with-param
-					name="remaining-properties"
-					select="substring-after(@sb:property, ' ')" />
+					name="path"
+					select="$path" />
 				<xsl:with-param
 					name="current-concept"
 					select="$current-concept" />
-			</xsl:call-template>
+			</xsl:call-template>			
 			
 		</xsl:when>
 		<xsl:otherwise>
@@ -556,6 +565,26 @@ THE SOFTWARE.
 	</xsl:choose>
 </xsl:template>
 
+<xsl:template match="xsd:attribute">
+	<xsl:param name="path" />
+	<xsl:param name="current-concept" select="''" />
+
+	<xsl:if test="@sb:property">
+		<xsl:call-template name="bind-property">
+			<xsl:with-param
+				name="properties"
+				select="@sb:property" />
+			<xsl:with-param
+				name="path"
+				select="$path" />
+			<xsl:with-param
+				name="current-concept"
+				select="$current-concept" />
+		</xsl:call-template>		
+	</xsl:if>
+	
+</xsl:template>
+
 <xsl:template match="xsd:complexType|xsd:sequence|xsd:choice">
 	<xsl:param name="path" />
 	<xsl:param name="predicate" select="''" />
@@ -566,7 +595,8 @@ THE SOFTWARE.
 			xsd:complexType
 				| xsd:sequence
 				| xsd:choice
-				| xsd:element">
+				| xsd:element
+				| xsd:attribute">
 		<xsl:with-param name="path" select="$path" />
 		<xsl:with-param name="predicate" select="$predicate" />
 		<xsl:with-param
