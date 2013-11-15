@@ -46,6 +46,16 @@ class Property < Test::Unit::TestCase
 		assert_equal tokens[2], "/ROOT/ELEMENT_CONCEPT/ELEMENT_PROPERTY"
 	end
 	
+	def assert_id_only_attribute(result)
+		tokens = result.split(/[;\n]/)
+		
+		assert_equal result.lines.count, 1
+		
+		assert_equal tokens[0], "bii:tir19-001-Id"
+		assert_equal tokens[1], "http://spec.cenbii.eu/BII2#tir19-Class"
+		assert_equal tokens[2], "/ROOT/ELEMENT_CONCEPT/@ELEMENT_PROPERTY"
+	end
+	
 	def assert_id_name(result)
 		tokens = result.split(/[;\n]/)
 		
@@ -171,8 +181,13 @@ class Property < Test::Unit::TestCase
 		assert_id_two(out);
 	end
 	
+	def test_property_attribute
+		out = do_xslt("data/property_attribute.xsd")
+		assert_id_only_attribute(out);
+	end
+	
 	def test_property_attribute_type
 		out = do_xslt("data/property_attribute_type.xsd")
-		assert_id_only(out);
+		assert_id_only_attribute(out);
 	end
 end

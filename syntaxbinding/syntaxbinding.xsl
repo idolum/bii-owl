@@ -119,6 +119,12 @@ THE SOFTWARE.
 			<xsl:text>;</xsl:text>
 			<xsl:value-of select="$path" />
 			<xsl:text>/</xsl:text>
+			<xsl:if
+				test="
+					local-name()='attribute'
+						and namespace-uri()='http://www.w3.org/2001/XMLSchema'">
+				<xsl:text>@</xsl:text>
+			</xsl:if>
 			<xsl:choose>
 				<xsl:when test="@ref">
 					<xsl:value-of select="@ref" />
