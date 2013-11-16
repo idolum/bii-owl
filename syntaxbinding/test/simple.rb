@@ -46,6 +46,27 @@ class Property < Test::Unit::TestCase
 		assert_equal tokens[2], "/ROOT/ELEMENT_CONCEPT/ELEMENT_PROPERTY"
 	end
 	
+	def assert_id_only_predicate(result)
+		tokens = result.split(/[;\n]/)
+		
+		assert_equal result.lines.count, 1
+				
+		assert_equal tokens[0], "bii:tir19-001-Id"
+		assert_equal tokens[1], "http://spec.cenbii.eu/BII2#tir19-Class"
+		assert_equal tokens[2], "/ROOT/ELEMENT_CONCEPT/ELEMENT_PROPERTY[@attribute=1]"
+	end
+	
+	def assert_id_content(result)
+		tokens = result.split(/[;\n]/)
+		
+		assert_equal result.lines.count, 1
+		
+		assert_equal tokens[0], "bii:tir19-001-Id"
+		assert_equal tokens[1], "http://spec.cenbii.eu/BII2#tir19-Class"
+		assert_equal tokens[2], "/ROOT/ELEMENT_CONCEPT/ELEMENT_PROPERTY"
+		assert_equal tokens[3], "value"
+	end
+	
 	def assert_id_only_attribute(result)
 		tokens = result.split(/[;\n]/)
 		
@@ -70,6 +91,21 @@ class Property < Test::Unit::TestCase
 		assert_equal tokens[5], "/ROOT/ELEMENT_CONCEPT/ELEMENT_PROPERTY_2"
 	end
 	
+	def assert_id_name_content(result)
+		tokens = result.split(/[;\n]/)
+		
+		assert_equal result.lines.count, 2
+		
+		assert_equal tokens[0], "bii:tir19-001-Id"
+		assert_equal tokens[1], "http://spec.cenbii.eu/BII2#tir19-Class"
+		assert_equal tokens[2], "/ROOT/ELEMENT_CONCEPT/ELEMENT_PROPERTY_1"
+		assert_equal tokens[3], "value"
+		
+		assert_equal tokens[4], "bii:tir19-002-Name"
+		assert_equal tokens[5], "http://spec.cenbii.eu/BII2#tir19-Class"
+		assert_equal tokens[6], "/ROOT/ELEMENT_CONCEPT/ELEMENT_PROPERTY_1/ELEMENT_PROPERTY_2"
+	end
+	
 	def assert_id_two(result)
 		tokens = result.split(/[;\n]/)
 		
@@ -82,6 +118,20 @@ class Property < Test::Unit::TestCase
 		assert_equal tokens[3], "bii:tir19-003-IdA"
 		assert_equal tokens[4], "http://spec.cenbii.eu/BII2#tir19-ClassA"
 		assert_equal tokens[5], "/ROOT/ELEMENT_CONCEPT_2/ELEMENT_PROPERTY"
+	end
+	
+	def assert_id_two_same(result)
+		tokens = result.split(/[;\n]/)
+		
+		assert_equal result.lines.count, 2
+		
+		assert_equal tokens[0], "bii:tir19-001-Id"
+		assert_equal tokens[1], "http://spec.cenbii.eu/BII2#tir19-Class"
+		assert_equal tokens[2], "/ROOT/ELEMENT_CONCEPT/ELEMENT_PROPERTY"
+		
+		assert_equal tokens[3], "bii:tir19-003-IdA"
+		assert_equal tokens[4], "http://spec.cenbii.eu/BII2#tir19-ClassA"
+		assert_equal tokens[5], "/ROOT/ELEMENT_CONCEPT/ELEMENT_PROPERTY"
 	end
 	
 	def assert_id_nested(result)
@@ -134,6 +184,16 @@ class Property < Test::Unit::TestCase
 	def test_property_noreference
 		out = do_xslt("data/property_noreference.xsd")
 		assert_id_only(out)
+	end
+	
+	def test_property_typeof_noreference
+		out = do_xslt("data/property_typeof_noreference.xsd")
+		assert_id_two_same(out)
+	end
+	
+	def test_property_typeof_reference
+		out = do_xslt("data/property_typeof_reference.xsd")
+		assert_id_two_same(out)
 	end
 	
 	def test_property_two
@@ -189,5 +249,30 @@ class Property < Test::Unit::TestCase
 	def test_property_attribute_type
 		out = do_xslt("data/property_attribute_type.xsd")
 		assert_id_only_attribute(out);
+	end
+	
+	def test_property_noreference_content
+		out = do_xslt("data/property_noreference_content.xsd")
+		assert_id_content(out);
+	end
+	
+	def test_property_reference_content
+		out = do_xslt("data/property_reference_content.xsd")
+		assert_id_content(out);
+	end
+	
+	def test_property_reference_content_two
+		out = do_xslt("data/property_reference_content_two.xsd")
+		assert_id_name_content(out);
+	end
+	
+	def test_property_noreference_content_two
+		out = do_xslt("data/property_noreference_content_two.xsd")
+		assert_id_name_content(out);
+	end
+	
+	def test_property_predicate
+		out = do_xslt("data/property_predicate.xsd")
+		assert_id_only_predicate(out);
 	end
 end

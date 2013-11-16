@@ -82,6 +82,38 @@ THE SOFTWARE.
 				substring-after($curi, ':'))" />
 </xsl:template>
 
+<xsl:template name="get-curi">
+	<!-- Gets the curi part of a curi-predicate expression -->
+	
+	<xsl:param name="expression" />
+	
+	<xsl:choose>
+		<xsl:when test="contains($expression, '[')">
+		<xsl:value-of
+			select=" substring-before($expression, '[')" />
+		</xsl:when>
+		<xsl:otherwise>
+			<xsl:value-of select="$expression" />
+		</xsl:otherwise>
+	</xsl:choose>
+</xsl:template>
+
+<xsl:template name="get-predicate">
+	<!-- Gets the predicate of a curi-predicate expression -->
+	
+	<xsl:param name="expression" />
+	
+	<xsl:if test="contains($expression, '[')">
+		<xsl:text>[</xsl:text>
+		<xsl:value-of
+			select="
+				substring-before(
+					substring-after($expression, '['),
+					']')" />
+		<xsl:text>]</xsl:text>
+	</xsl:if>
+</xsl:template>
+
 <xsl:template name="write-path">
 	<!--
 		Writes the syntax binding XPath for the properties specified
@@ -102,22 +134,53 @@ THE SOFTWARE.
 				<xsl:with-param name="curi" select="$current-concept" />
 			</xsl:call-template>
 		</xsl:variable>
-					
-		<xsl:variable name="property-uri">
-			<xsl:call-template name="resolve-curi">
-				<xsl:with-param name="curi" select="$property" />
+		
+		<!-- CURI of the property -->
+		<xsl:variable name="property-curi">
+			<xsl:call-template name="get-curi">
+				<xsl:with-param
+					name="expression"
+					select="$property" />
 			</xsl:call-template>
 		</xsl:variable>
-			
+		
+		<!-- Resolved URI of the property -->
+		<xsl:variable name="property-uri">
+			<xsl:call-template name="resolve-curi">
+				<xsl:with-param name="curi" select="$property-curi" />
+			</xsl:call-template>
+		</xsl:variable>
+		
+		<!-- Predicate for the property -->
+		<xsl:variable name="property-predicate">
+			<xsl:call-template name="get-predicate">
+				<xsl:with-param
+					name="expression"
+					select="$property" />
+			</xsl:call-template>
+		</xsl:variable>
+
+		<!--
+			The concept the property belongs to, i.e. the domain of the
+			property.
+		-->
 		<xsl:variable
 			name="property-concept"
-			select="$ontology/rdf:RDF/rdf:Description[@rdf:about=$property-uri]/rdfs:domain/@rdf:resource" />
+			select="
+				$ontology/rdf:RDF/rdf:Description[
+					@rdf:about=$property-uri
+				]/rdfs:domain/@rdf:resource" />
 	
+		<!--
+			Only print, if the the current concept is the domain of
+			property.
+		-->		
 		<xsl:if test="$property-concept=$current-concept-uri">
-			<xsl:value-of select="$property" />
+			<xsl:value-of select="$property-curi" />
 			<xsl:text>;</xsl:text>
 			<xsl:value-of select="$current-concept-uri" />
 			<xsl:text>;</xsl:text>
+			<!-- Print the XPath for the property element -->
 			<xsl:value-of select="$path" />
 			<xsl:text>/</xsl:text>
 			<xsl:if
@@ -134,6 +197,11 @@ THE SOFTWARE.
 					<xsl:value-of select="@name" />
 				</xsl:otherwise>
 			</xsl:choose>
+			<!-- Print predicate for the property element -->
+			<xsl:if test="$property-predicate!=''">
+				<xsl:value-of select="$property-predicate" />
+			</xsl:if>
+			<!-- Print content of the property element -->
 			<xsl:if test="$content!=''">
 				<xsl:text>;</xsl:text>
 				<xsl:value-of select="$content" />
@@ -275,27 +343,15 @@ THE SOFTWARE.
 	<xsl:if test="$typeof!=''">
 			
 		<xsl:variable name="typeof-predicate">
-			<xsl:if test="contains($typeof, '[')">
-				<xsl:text>[</xsl:text>
-				<xsl:value-of
-					select="
-						substring-before(
-							substring-after($typeof, '['),
-							']')" />
-				<xsl:text>]</xsl:text>
-			</xsl:if>
+			<xsl:call-template name="get-predicate">
+				<xsl:with-param name="expression" select="$typeof" />
+			</xsl:call-template>
 		</xsl:variable>
 		
 		<xsl:variable name="new-current-concept">
-			<xsl:choose>
-				<xsl:when test="contains($typeof, '[')">
-				<xsl:value-of
-					select=" substring-before($typeof, '[')" />
-				</xsl:when>
-				<xsl:otherwise>
-					<xsl:value-of select="$typeof" />
-				</xsl:otherwise>
-			</xsl:choose>
+			<xsl:call-template name="get-curi">
+				<xsl:with-param name="expression" select="$typeof" />
+			</xsl:call-template>
 		</xsl:variable>
 		
 		<xsl:variable name="in-range">
