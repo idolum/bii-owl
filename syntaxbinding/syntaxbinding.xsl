@@ -269,11 +269,12 @@ THE SOFTWARE.
 	<xsl:param name="remaining-typeofs" />
 	<xsl:param name="path" />
 	<xsl:param name="current-concept" />
+	<xsl:param name="predicate" />
 
 	<!-- Bind the concept -->
 	<xsl:if test="$typeof!=''">
 			
-		<xsl:variable name="predicate">
+		<xsl:variable name="typeof-predicate">
 			<xsl:if test="contains($typeof, '[')">
 				<xsl:text>[</xsl:text>
 				<xsl:value-of
@@ -309,19 +310,51 @@ THE SOFTWARE.
 		</xsl:variable>
 
 		<xsl:if test="$in-range='true'">
+						
+			<xsl:if test="@sb:property">
+				<xsl:call-template name="bind-property">
+					<xsl:with-param 
+						name="properties"
+						select="@sb:property" />
+					<xsl:with-param
+						name="path"
+						select="$path" />
+					<xsl:with-param
+						name="current-concept"
+						select="$new-current-concept" />
+					<xsl:with-param
+						name="content"
+						select="@sb:content" />
+				</xsl:call-template>			
+			</xsl:if>
+			
 			<xsl:choose>
 				<xsl:when test="@ref">
+					
 					<xsl:apply-templates select="//xsd:element[@name=$name]">
-						<xsl:with-param name="path" select="$path" />
-						<xsl:with-param name="predicate" select="$predicate" />
-						<xsl:with-param name="current-concept" select="$new-current-concept" />
+						<xsl:with-param
+							name="path"
+							select="$path" />
+						<xsl:with-param
+							name="predicate"
+							select="$typeof-predicate" />
+						<xsl:with-param
+							name="current-concept"
+							select="$new-current-concept" />
 					</xsl:apply-templates>
+					
 				</xsl:when>
 				<xsl:when test="@type">
+					
 					<xsl:variable name="type" select="@type" />
+					
 					<xsl:apply-templates select="//xsd:complexType[@name=$type]">
-						<xsl:with-param name="path" select="$path" />
-						<xsl:with-param name="predicate" select="$predicate" />
+						<xsl:with-param
+							name="path"
+							select="concat($path, '/', $name, $predicate)" />
+						<xsl:with-param
+							name="predicate"
+							select="$typeof-predicate" />
 						<xsl:with-param name="current-concept">
 							<xsl:choose>
 								<xsl:when test="contains($typeof, '[')">
@@ -334,23 +367,30 @@ THE SOFTWARE.
 							</xsl:choose>
 						</xsl:with-param>
 					</xsl:apply-templates>
+					
 				</xsl:when>
 				<xsl:otherwise>
+					
 					<xsl:apply-templates select="xsd:complexType">
-						<xsl:with-param name="path" select="$path" />
-						<xsl:with-param name="predicate" select="$predicate" />
+						<xsl:with-param
+							name="path"
+							select="concat($path, '/', $name, $predicate)" />
+						<xsl:with-param
+							name="predicate"
+							select="$typeof-predicate" />
 						<xsl:with-param name="current-concept">
 							<xsl:choose>
 								<xsl:when test="contains($typeof, '[')">
-								<xsl:value-of
-									select=" substring-before($typeof, '[')" />
+									<xsl:value-of
+										select=" substring-before($typeof, '[')" />
 								</xsl:when>
 								<xsl:otherwise>
 									<xsl:value-of select="$typeof" />
 								</xsl:otherwise>
 							</xsl:choose>
 						</xsl:with-param>
-					</xsl:apply-templates>				
+					</xsl:apply-templates>		
+							
 				</xsl:otherwise>
 			</xsl:choose>
 		</xsl:if>
@@ -446,8 +486,8 @@ THE SOFTWARE.
 	<xsl:variable name="type" select="@type" />
 	<xsl:variable name="name" select="@name" />
 			
-	<xsl:if test="count(@*[local-name()='property'])=1">
-
+	<xsl:if test="@sb:property">
+		
 		<xsl:call-template name="bind-property">
 			<xsl:with-param 
 				name="properties"
@@ -475,7 +515,7 @@ THE SOFTWARE.
 						select="@sb:typeof" />
 				</xsl:call-template>
 			</xsl:variable>
-			
+
 			<xsl:call-template name="iterate-typeofs">
 				<xsl:with-param name="name" select="$name" />
 				<xsl:with-param name="typeof" select="$typeof" />
@@ -484,7 +524,13 @@ THE SOFTWARE.
 					select="substring-after(@sb:typeof, ' ')" />
 				<xsl:with-param
 					name="path"
-					select="concat($path, '/', $name, $predicate)" />
+					select="$path" />
+				<xsl:with-param
+					name="name"
+					select="$name" />
+				<xsl:with-param
+					name="predicate"
+					select="$predicate" />
 				<xsl:with-param
 					name="current-concept"
 					select="$current-concept" />
@@ -494,6 +540,7 @@ THE SOFTWARE.
 		<xsl:otherwise>
 			<xsl:choose>
 				<xsl:when test="xsd:complexType">
+					
 					<xsl:apply-templates select="xsd:complexType">
 						<xsl:with-param
 							name="path"
@@ -502,6 +549,7 @@ THE SOFTWARE.
 							name="current-concept"
 							select="$current-concept" />
 					</xsl:apply-templates>
+					
 				</xsl:when>
 				<xsl:otherwise>
 					<xsl:if test="starts-with($type, 'udx') or $type='typeADDRESS'">
@@ -527,23 +575,50 @@ THE SOFTWARE.
 	
 	<xsl:variable name="ref" select="@ref" />
 	
-	<xsl:choose>
-		<xsl:when test="@sb:property">
+	<xsl:if test="@sb:property">
+				
+		<xsl:call-template name="bind-property">
+			<xsl:with-param 
+				name="properties"
+				select="@sb:property" />
+			<xsl:with-param
+				name="path"
+				select="$path" />
+			<xsl:with-param
+				name="current-concept"
+				select="$current-concept" />
+			<xsl:with-param
+				name="content"
+				select="@sb:content" />
+		</xsl:call-template>			
+
+	</xsl:if>
 			
-			<xsl:call-template name="bind-property">
-				<xsl:with-param 
-					name="properties"
-					select="@sb:property" />
+	<xsl:choose>
+		<xsl:when test="@sb:typeof">
+			
+			<xsl:variable name="typeof">
+				<xsl:call-template name="get-first-token">
+					<xsl:with-param
+						name="string"
+						select="@sb:typeof" />
+				</xsl:call-template>
+			</xsl:variable>
+				
+			<xsl:call-template name="iterate-typeofs">
+				<xsl:with-param name="name" select="$ref" />
+				<xsl:with-param name="typeof" select="$typeof" />
 				<xsl:with-param
-					name="path"
-					select="$path" />
+					name="remaining-typeofs"
+					select="substring-after(@sb:typeof, ' ')" />
+				<xsl:with-param name="path" select="$path" />
 				<xsl:with-param
 					name="current-concept"
 					select="$current-concept" />
-				<xsl:with-param
-					name="content"
-					select="@sb:content" />
-			</xsl:call-template>			
+			</xsl:call-template>
+			
+		</xsl:when>
+		<xsl:otherwise>
 			
 			<xsl:apply-templates select="//xsd:element[@name=$ref]">
 				<xsl:with-param
@@ -554,45 +629,9 @@ THE SOFTWARE.
 					select="$current-concept" />
 			</xsl:apply-templates>
 			
-		</xsl:when>
-		<xsl:otherwise>
-			<xsl:choose>
-				<xsl:when test="@sb:typeof">
-					
-					<xsl:variable name="typeof">
-						<xsl:call-template name="get-first-token">
-							<xsl:with-param
-								name="string"
-								select="@sb:typeof" />
-						</xsl:call-template>
-					</xsl:variable>
-						
-					<xsl:call-template name="iterate-typeofs">
-						<xsl:with-param name="name" select="$ref" />
-						<xsl:with-param name="typeof" select="$typeof" />
-						<xsl:with-param
-							name="remaining-typeofs"
-							select="substring-after(@sb:typeof, ' ')" />
-						<xsl:with-param name="path" select="$path" />
-						<xsl:with-param
-							name="current-concept"
-							select="$current-concept" />
-					</xsl:call-template>
-					
-				</xsl:when>
-				<xsl:otherwise>
-					<xsl:apply-templates select="//xsd:element[@name=$ref]">
-						<xsl:with-param
-							name="path"
-							select="$path" />
-						<xsl:with-param
-							name="current-concept"
-							select="$current-concept" />
-					</xsl:apply-templates>
-				</xsl:otherwise>
-			</xsl:choose> 
 		</xsl:otherwise>
 	</xsl:choose>
+		
 </xsl:template>
 
 <xsl:template match="xsd:attribute">
