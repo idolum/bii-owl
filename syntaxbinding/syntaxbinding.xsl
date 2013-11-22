@@ -203,8 +203,9 @@ THE SOFTWARE.
 			</xsl:if>
 			<!-- Print content of the property element -->
 			<xsl:if test="$content!=''">
-				<xsl:text>;</xsl:text>
+				<xsl:text>;"</xsl:text>
 				<xsl:value-of select="$content" />
+				<xsl:text>"</xsl:text>
 			</xsl:if>
 			<xsl:text>
 </xsl:text>
@@ -354,11 +355,22 @@ THE SOFTWARE.
 			</xsl:call-template>
 		</xsl:variable>
 		
+		<xsl:variable name="super-concept">
+			<xsl:choose>
+				<xsl:when test="@sb:domain">
+					<xsl:value-of select="@sb:domain" />
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="$current-concept" />
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+		
 		<xsl:variable name="in-range">
 			<xsl:call-template name="is-part-of">
 				<xsl:with-param
 					name="super-concept"
-					select="$current-concept" />
+					select="$super-concept" />
 				<xsl:with-param
 					name="sub-concept"
 					select="$new-current-concept" />
@@ -608,7 +620,16 @@ THE SOFTWARE.
 					
 				</xsl:when>
 				<xsl:otherwise>
-					<xsl:if test="starts-with($type, 'udx') or $type='typeADDRESS'">
+					<!--
+						Script is not able to handle loops in the schema
+						definition. Thus, only some complex types are
+						considered.
+					-->
+					<xsl:if
+						test="
+							starts-with($type, 'udx')
+								or $type='typeADDRESS'
+								or $type='typeFTEMPLATE'">
 						<xsl:apply-templates select="//xsd:complexType[@name=$type]">
 							<xsl:with-param
 								name="path"
@@ -717,7 +738,7 @@ THE SOFTWARE.
 	<xsl:param name="path" />
 	<xsl:param name="predicate" select="''" />
 	<xsl:param name="current-concept" select="''" />
-
+	
 	<xsl:apply-templates
 		select="
 			xsd:complexType
