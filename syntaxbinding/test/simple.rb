@@ -77,6 +77,18 @@ class Property < Test::Unit::TestCase
 		assert_equal tokens[2], "/ROOT/ELEMENT_CONCEPT/@ELEMENT_PROPERTY"
 	end
 	
+	def assert_id_comment(result)
+		tokens = result.split(/[;\n]/)
+		
+		assert_equal result.lines.count, 1
+		
+		assert_equal tokens[0], "bii:tir19-001-Id"
+		assert_equal tokens[1], "http://spec.cenbii.eu/BII2#tir19-Class"
+		assert_equal tokens[2], "/ROOT/ELEMENT_CONCEPT/ELEMENT_PROPERTY"
+		assert_equal tokens[3], ""
+		assert_equal tokens[4], "\"A comment\""
+	end
+	
 	def assert_id_name(result)
 		tokens = result.split(/[;\n]/)
 		
@@ -86,9 +98,9 @@ class Property < Test::Unit::TestCase
 		assert_equal tokens[1], "http://spec.cenbii.eu/BII2#tir19-Class"
 		assert_equal tokens[2], "/ROOT/ELEMENT_CONCEPT/ELEMENT_PROPERTY_1"
 		
-		assert_equal tokens[3], "bii:tir19-002-Name"
-		assert_equal tokens[4], "http://spec.cenbii.eu/BII2#tir19-Class"
-		assert_equal tokens[5], "/ROOT/ELEMENT_CONCEPT/ELEMENT_PROPERTY_2"
+		assert_equal tokens[5], "bii:tir19-002-Name"
+		assert_equal tokens[6], "http://spec.cenbii.eu/BII2#tir19-Class"
+		assert_equal tokens[7], "/ROOT/ELEMENT_CONCEPT/ELEMENT_PROPERTY_2"
 	end
 	
 	def assert_id_name_content(result)
@@ -100,10 +112,11 @@ class Property < Test::Unit::TestCase
 		assert_equal tokens[1], "http://spec.cenbii.eu/BII2#tir19-Class"
 		assert_equal tokens[2], "/ROOT/ELEMENT_CONCEPT/ELEMENT_PROPERTY_1"
 		assert_equal tokens[3], "\"value\""
+		assert_equal tokens[4], ""
 		
-		assert_equal tokens[4], "bii:tir19-002-Name"
-		assert_equal tokens[5], "http://spec.cenbii.eu/BII2#tir19-Class"
-		assert_equal tokens[6], "/ROOT/ELEMENT_CONCEPT/ELEMENT_PROPERTY_1/ELEMENT_PROPERTY_2"
+		assert_equal tokens[5], "bii:tir19-002-Name"
+		assert_equal tokens[6], "http://spec.cenbii.eu/BII2#tir19-Class"
+		assert_equal tokens[7], "/ROOT/ELEMENT_CONCEPT/ELEMENT_PROPERTY_1/ELEMENT_PROPERTY_2"
 	end
 	
 	def assert_id_two(result)
@@ -115,9 +128,9 @@ class Property < Test::Unit::TestCase
 		assert_equal tokens[1], "http://spec.cenbii.eu/BII2#tir19-Class"
 		assert_equal tokens[2], "/ROOT/ELEMENT_CONCEPT_1/ELEMENT_PROPERTY"
 		
-		assert_equal tokens[3], "bii:tir19-003-IdA"
-		assert_equal tokens[4], "http://spec.cenbii.eu/BII2#tir19-ClassA"
-		assert_equal tokens[5], "/ROOT/ELEMENT_CONCEPT_2/ELEMENT_PROPERTY"
+		assert_equal tokens[5], "bii:tir19-003-IdA"
+		assert_equal tokens[6], "http://spec.cenbii.eu/BII2#tir19-ClassA"
+		assert_equal tokens[7], "/ROOT/ELEMENT_CONCEPT_2/ELEMENT_PROPERTY"
 	end
 	
 	def assert_id_two_same(result)
@@ -129,9 +142,9 @@ class Property < Test::Unit::TestCase
 		assert_equal tokens[1], "http://spec.cenbii.eu/BII2#tir19-Class"
 		assert_equal tokens[2], "/ROOT/ELEMENT_CONCEPT/ELEMENT_PROPERTY"
 		
-		assert_equal tokens[3], "bii:tir19-003-IdA"
-		assert_equal tokens[4], "http://spec.cenbii.eu/BII2#tir19-ClassA"
-		assert_equal tokens[5], "/ROOT/ELEMENT_CONCEPT/ELEMENT_PROPERTY"
+		assert_equal tokens[5], "bii:tir19-003-IdA"
+		assert_equal tokens[6], "http://spec.cenbii.eu/BII2#tir19-ClassA"
+		assert_equal tokens[7], "/ROOT/ELEMENT_CONCEPT/ELEMENT_PROPERTY"
 	end
 	
 	def assert_id_super_sub(result)
@@ -143,9 +156,9 @@ class Property < Test::Unit::TestCase
 		assert_equal tokens[1], "http://spec.cenbii.eu/BII2#tir19-Class"
 		assert_equal tokens[2], "/ROOT/ELEMENT_CONCEPT/ELEMENT_PROPERTY"
 		
-		assert_equal tokens[3], "bii:tir19-005-IdC"
-		assert_equal tokens[4], "http://spec.cenbii.eu/BII2#tir19-ClassC"
-		assert_equal tokens[5], "/ROOT/ELEMENT_CONCEPT/ELEMENT_PROPERTY"
+		assert_equal tokens[5], "bii:tir19-005-IdC"
+		assert_equal tokens[6], "http://spec.cenbii.eu/BII2#tir19-ClassC"
+		assert_equal tokens[7], "/ROOT/ELEMENT_CONCEPT/ELEMENT_PROPERTY"
 	end	
 	
 	def assert_id_nested(result)
@@ -157,9 +170,9 @@ class Property < Test::Unit::TestCase
 		assert_equal tokens[1], "http://spec.cenbii.eu/BII2#tir19-Class"
 		assert_equal tokens[2], "/ROOT/ELEMENT_CONCEPT_1[ELEMENT_PREDICATE='a']/ELEMENT_CONCEPT_2/ELEMENT_PROPERTY"
 		
-		assert_equal tokens[3], "bii:tir19-004-IdB"
-		assert_equal tokens[4], "http://spec.cenbii.eu/BII2#tir19-ClassB"
-		assert_equal tokens[5], "/ROOT/ELEMENT_CONCEPT_1[ELEMENT_PREDICATE='b']/ELEMENT_CONCEPT_2/ELEMENT_PROPERTY"
+		assert_equal tokens[5], "bii:tir19-004-IdB"
+		assert_equal tokens[6], "http://spec.cenbii.eu/BII2#tir19-ClassB"
+		assert_equal tokens[7], "/ROOT/ELEMENT_CONCEPT_1[ELEMENT_PREDICATE='b']/ELEMENT_CONCEPT_2/ELEMENT_PROPERTY"
 	end
 	
 	def assert_id_nested2(result)
@@ -171,9 +184,9 @@ class Property < Test::Unit::TestCase
 		assert_equal tokens[1], "http://spec.cenbii.eu/BII2#tir19-ClassC"
 		assert_equal tokens[2], "/ROOT/ELEMENT_CONCEPT_1[ELEMENT_PREDICATE='a']/ELEMENT_CONCEPT_2/ELEMENT_PROPERTY"
 		
-		assert_equal tokens[3], "bii:tir19-006-IdD"
-		assert_equal tokens[4], "http://spec.cenbii.eu/BII2#tir19-ClassD"
-		assert_equal tokens[5], "/ROOT/ELEMENT_CONCEPT_1[ELEMENT_PREDICATE='b']/ELEMENT_CONCEPT_2/ELEMENT_PROPERTY"
+		assert_equal tokens[5], "bii:tir19-006-IdD"
+		assert_equal tokens[6], "http://spec.cenbii.eu/BII2#tir19-ClassD"
+		assert_equal tokens[7], "/ROOT/ELEMENT_CONCEPT_1[ELEMENT_PREDICATE='b']/ELEMENT_CONCEPT_2/ELEMENT_PROPERTY"
 	end
 	
 	def assert_id_nested_double(result)
@@ -185,9 +198,9 @@ class Property < Test::Unit::TestCase
 		assert_equal tokens[1], "http://spec.cenbii.eu/BII2#tir19-ClassC"
 		assert_equal tokens[2], "/ROOT/ELEMENT_CONCEPT_1[ELEMENT_PREDICATE='a']/ELEMENT_CONCEPT_2/ELEMENT_CONCEPT_3/ELEMENT_PROPERTY"
 		
-		assert_equal tokens[3], "bii:tir19-006-IdD"
-		assert_equal tokens[4], "http://spec.cenbii.eu/BII2#tir19-ClassD"
-		assert_equal tokens[5], "/ROOT/ELEMENT_CONCEPT_1[ELEMENT_PREDICATE='b']/ELEMENT_CONCEPT_2/ELEMENT_CONCEPT_3/ELEMENT_PROPERTY"
+		assert_equal tokens[5], "bii:tir19-006-IdD"
+		assert_equal tokens[6], "http://spec.cenbii.eu/BII2#tir19-ClassD"
+		assert_equal tokens[7], "/ROOT/ELEMENT_CONCEPT_1[ELEMENT_PREDICATE='b']/ELEMENT_CONCEPT_2/ELEMENT_CONCEPT_3/ELEMENT_PROPERTY"
 	end
 	
 	def assert_id_two_roots(result)
@@ -308,5 +321,15 @@ class Property < Test::Unit::TestCase
 	def test_property_domain
 		out = do_xslt("data/property_domain.xsd")
 		assert_id_super_sub(out);
+	end
+	
+	def test_property_comment_reference
+		out = do_xslt("data/property_comment_reference.xsd")
+		assert_id_comment(out);
+	end
+	
+	def test_property_comment_noreference
+		out = do_xslt("data/property_comment_noreference.xsd")
+		assert_id_comment(out);
 	end
 end

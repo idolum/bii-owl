@@ -125,6 +125,7 @@ THE SOFTWARE.
 	<xsl:param name="remaining-properties" />
 	<xsl:param name="current-concept" select="''" />
 	<xsl:param name="content" select="''" />
+	<xsl:param name="comment" select="''" />
 	
 	<!-- Write property binding -->
 	<xsl:if test="$property!=''">
@@ -202,10 +203,17 @@ THE SOFTWARE.
 				<xsl:value-of select="$property-predicate" />
 			</xsl:if>
 			<!-- Print content of the property element -->
+			<xsl:text>;</xsl:text>
 			<xsl:if test="$content!=''">
-				<xsl:text>;"</xsl:text>
+				<xsl:text>"</xsl:text>
 				<xsl:value-of select="$content" />
 				<xsl:text>"</xsl:text>
+			</xsl:if>
+			<xsl:text>;</xsl:text>
+			<xsl:if test="$comment!=''">
+				<xsl:text>&quot;</xsl:text>
+				<xsl:value-of select="$comment" />
+				<xsl:text>&quot;</xsl:text>
 			</xsl:if>
 			<xsl:text>
 </xsl:text>
@@ -234,6 +242,9 @@ THE SOFTWARE.
 			<xsl:with-param
 				name="current-concept"
 				select="$current-concept" />
+			<xsl:with-param
+				name="comment"
+				select="@sb:comment" />
 		</xsl:call-template>
 	</xsl:if>
 	
@@ -497,6 +508,7 @@ THE SOFTWARE.
 	<xsl:param name="path" select="''" />
 	<xsl:param name="current-concept" select="''" />
 	<xsl:param name="content" select="''" />
+	<xsl:param name="comment" select="''" />
 	
 	<xsl:variable name="property">
 		<xsl:call-template name="get-first-token">
@@ -520,6 +532,9 @@ THE SOFTWARE.
 		<xsl:with-param
 			name="content"
 			select="$content" />
+		<xsl:with-param
+			name="comment"
+			select="$comment" />
 	</xsl:call-template>
 </xsl:template>
 
@@ -569,7 +584,10 @@ THE SOFTWARE.
 			<xsl:with-param
 				name="content"
 				select="@sb:content" />
-		</xsl:call-template>			
+			<xsl:with-param
+				name="comment"
+				select="@sb:comment" />
+		</xsl:call-template>
 		
 	</xsl:if>
 	
@@ -653,7 +671,7 @@ THE SOFTWARE.
 	<xsl:variable name="ref" select="@ref" />
 	
 	<xsl:if test="@sb:property">
-				
+
 		<xsl:call-template name="bind-property">
 			<xsl:with-param 
 				name="properties"
@@ -667,7 +685,10 @@ THE SOFTWARE.
 			<xsl:with-param
 				name="content"
 				select="@sb:content" />
-		</xsl:call-template>			
+			<xsl:with-param
+				name="comment"
+				select="@sb:comment" />
+		</xsl:call-template>
 
 	</xsl:if>
 			
