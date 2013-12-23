@@ -1,0 +1,3 @@
+[submodule "cts2-specification"]
+	path = cts2-specification
+	url = https://github.com/cts2/cts2-specification.git
