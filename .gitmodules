@@ -1,0 +1,6 @@
+[submodule "cts2-specification"]
+	path = cts2-specification
+	url = https://github.com/cts2/cts2-specification.git
+[submodule "vendor/cts2-1.1"]
+	path = vendor/cts2-1.1
+	url = https://github.com/cts2/cts2-specification.git
