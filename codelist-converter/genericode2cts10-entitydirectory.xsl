@@ -28,7 +28,10 @@ THE SOFTWARE.
 	xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 	xmlns:gc="http://docs.oasis-open.org/codelist/ns/genericode/1.0/"
 	xmlns:cts="http://schema.omg.org/spec/CTS2/1.0/Entity"
-	xmlns:cts-core="http://schema.omg.org/spec/CTS2/1.0/Core">
+	xmlns:cts-core="http://schema.omg.org/spec/CTS2/1.0/Core"
+	xmlns:exslt="http://exslt.org/common"
+	extension-element-prefixes="exslt">
+	
 
 <xsl:output method="xml" encoding="utf-8" />
 
@@ -62,9 +65,21 @@ THE SOFTWARE.
 			select="../ColumnSet/Key/ColumnRef/@Ref" />
 	</xsl:variable>
 	
+	<!--
+		Variable with dummy element for adding a namespace node via
+		xsl:copy-of.
+		
+		See also http://stackoverflow.com/questions/12179258
+	 -->
+	<xsl:variable name="ns">
+		<xsl:element name="bii:dummy" namespace="{$codelistUri}" />
+	</xsl:variable>
+	
 	<cts:EntityDirectory
 		complete="COMPLETE"
 		numEntries="2">
+		
+		<xsl:copy-of select="exslt:node-set($ns)/*/namespace::bii" />
 		
 		<cts-core:heading>
 			<cts-core:resourceRoot>
@@ -87,7 +102,7 @@ THE SOFTWARE.
 		<xsl:apply-templates select="Row">
 			<xsl:with-param name="key" select="$key" />
 		</xsl:apply-templates>
-		
+				
 	</cts:EntityDirectory>
 
 </xsl:template>
@@ -113,9 +128,6 @@ THE SOFTWARE.
 	<xsl:variable
 		name="codelistVersion"
 		select="/gc:CodeList/Identification/Version" />
-	<xsl:variable
-		name="codelistVersionUri"
-		select="''" />
 
 	<cts:entry
 		about="{$entityUri}"
@@ -125,10 +137,10 @@ THE SOFTWARE.
 			<xsl:value-of select="$renderUri" />
 			<xsl:text>codesystem/</xsl:text>
 			<xsl:value-of
-				select="/gc:CodeList/Identification/ShortName" />
+				select="$codelistName" />
 			<xsl:text>/version/</xsl:text>
 			<xsl:value-of
-				select="/gc:CodeList/Identification/Version" />
+				select="$codelistVersion" />
 			<xsl:text>/entity/</xsl:text>
 			<xsl:value-of select="$entityId" />
 		</xsl:attribute>
@@ -146,11 +158,11 @@ THE SOFTWARE.
 			<cts-core:describingCodeSystemVersion>
 				<cts-core:version>
 					<xsl:value-of
-						select="/gc:CodeList/Identification/Version" />
+						select="$codelistVersion" />
 				</cts-core:version>
 				<cts-core:codeSystem>
 					<xsl:value-of
-						select="/gc:CodeList/Identification/ShortName" />
+						select="$codelistName" />
 				</cts-core:codeSystem>
 			</cts-core:describingCodeSystemVersion>
 			<cts-core:designation>

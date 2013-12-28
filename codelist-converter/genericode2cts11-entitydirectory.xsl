@@ -28,7 +28,9 @@ THE SOFTWARE.
 	xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 	xmlns:gc="http://docs.oasis-open.org/codelist/ns/genericode/1.0/"
 	xmlns:cts="http://www.omg.org/spec/CTS2/1.1/Entity"
-	xmlns:cts-core="http://www.omg.org/spec/CTS2/1.1/Core">
+	xmlns:cts-core="http://www.omg.org/spec/CTS2/1.1/Core"
+	xmlns:exslt="http://exslt.org/common"
+	extension-element-prefixes="exslt">
 
 <xsl:output method="xml" encoding="utf-8" />
 
@@ -62,9 +64,21 @@ THE SOFTWARE.
 			select="../ColumnSet/Key/ColumnRef/@Ref" />
 	</xsl:variable>
 	
+	<!--
+		Variable with dummy element for adding a namespace node via
+		xsl:copy-of.
+		
+		See also http://stackoverflow.com/questions/12179258
+	 -->
+	<xsl:variable name="ns">
+		<xsl:element name="bii:dummy" namespace="{$codelistUri}" />
+	</xsl:variable>
+	
 	<cts:EntityDirectory
 		complete="COMPLETE"
 		numEntries="2">
+		
+		<xsl:copy-of select="exslt:node-set($ns)/*/namespace::bii" />
 		
 		<cts-core:heading>
 			<cts-core:resourceRoot>

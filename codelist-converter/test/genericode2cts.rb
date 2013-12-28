@@ -32,7 +32,7 @@ class Cts < Test::Unit::TestCase
 		xslt = XML::XSLT.new()
 		xslt.xml = data
 		xslt.xsl = stylesheet
-		xslt.parameters = { "canonicalUri" => "http://doesnotexist.local/", "renderUri" => "http://doesnotexist.local/" }
+		xslt.parameters = { "canonicalUri" => "http://doesnotexist.local/", "renderUri" => "http://doesnotexist.local/", "accessDate" => "2013-12-31T21:38:00+01:00" }
 		return xslt.serve;
 	end
 
@@ -80,5 +80,73 @@ class Cts < Test::Unit::TestCase
 		do_list_validate("1.0")
 	end
 
+	def do_directory_entities(version, namespaces)
+		out = do_xslt_directory("data/test.gc", version)
 
+		result = XML::Document.string(out)
+		
+		date = result.find("//cts-core:accessDate", namespaces)
+		assert_equal date.count, 1
+		assert_equal date.first.content, "2013-12-31T21:38:00+01:00"
+		
+		entities = result.find("//cts:entry", namespaces)
+		assert_equal entities.count, 2
+		
+		name = result.find("//cts:entry[1]/@about", namespaces)
+		assert_equal name.count, 1
+		assert_equal name.first.value, "http://doesnotexist.local/ABC-1.0/Code1"
+		
+		name = result.find("//cts:entry[1]/@href", namespaces)
+		assert_equal name.count, 1
+		assert_equal name.first.value, "http://doesnotexist.local/codesystem/TestCode/version/1.0/entity/Code1"
+		
+		name = result.find("//cts:entry[2]/@about", namespaces)
+		assert_equal name.count, 1
+		assert_equal name.first.value, "http://doesnotexist.local/ABC-1.0/Code2"
+		
+		name = result.find("//cts:entry[2]/@href", namespaces)
+		assert_equal name.count, 1
+		assert_equal name.first.value, "http://doesnotexist.local/codesystem/TestCode/version/1.0/entity/Code2"
+		
+		name = result.find("//cts:entry[1]/cts-core:name", namespaces)
+		assert_equal name.count, 1
+		
+		assert_equal name.first.children[0].content, "bii"
+		assert_equal name.first.children[1].content, "Code1"
+		
+		name = result.find("//cts:entry[2]/cts-core:name", namespaces)
+		assert_equal name.count, 1
+		
+		assert_equal name.first.children[0].content, "bii"
+		assert_equal name.first.children[1].content, "Code2"
+		
+		name = result.find("//cts:entry[1]/cts-core:knownEntityDescription", namespaces)
+		assert_equal name.count, 1
+		assert_equal name.first.children[0].children[0].content, "1.0"
+		assert_equal name.first.children[0].children[1].content, "TestCode"
+		assert_equal name.first.children[1].content, "First Code"
+		
+		name = result.find("//cts:entry[2]/cts-core:knownEntityDescription", namespaces)
+		assert_equal name.count, 1
+		assert_equal name.first.children[0].children[0].content, "1.0"
+		assert_equal name.first.children[0].children[1].content, "TestCode"
+		assert_equal name.first.children[1].content, "Second Code"
+	end
+	
+	def test_cts10_directory_entities
+		namespaces = [
+			'cts:http://schema.omg.org/spec/CTS2/1.0/Entity',
+			'cts-core:http://schema.omg.org/spec/CTS2/1.0/Core'
+		]
+		do_directory_entities("1.0", namespaces)
+	end
+	
+	def test_cts11_directory_entities
+		namespaces = [
+			'cts:http://www.omg.org/spec/CTS2/1.1/Entity',
+			'cts-core:http://www.omg.org/spec/CTS2/1.1/Core'
+		]
+		do_directory_entities("1.1", namespaces)
+	end
+	
 end
