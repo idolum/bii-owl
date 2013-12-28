@@ -9,11 +9,19 @@ Up to now, the following tools are provided:
 * bii2owl.rb: A Ruby script for creating OWL ontologies based on the
   BII IRMs.
 
-* codelist-converter: Tools for converting codelist into varios codelist
-  formats. Currently available:
+* codelist-converter: Tools for converting codelist formats. Currently
+  available:
 
-  - genericode2adms.xsl: OASIS Genericode (SimpleCodeList) [2] to ADMS [3]
-    in RDF/XML
+  - genericode2adms.xsl: OASIS Genericode (SimpleCodeList) [2] to ADMS
+    [3] in RDF/XML
+  - genericode2cts10-entitydirectory.xsl: OASIS Genericode
+    (SimpleCodeList) [2] to CTS2 1.0 EntityDirectory [4]
+  - genericode2cts10-entitylist.xsl: OASIS Genericode
+    (SimpleCodeList) [2] to CTS2 1.0 EntityList [4]
+  - genericode2cts11-entitydirectory.xsl: OASIS Genericode
+    (SimpleCodeList) [2] to CTS2 1.1 EntityDirectory [4]
+  - genericode2cts10-entitylist.xsl: OASIS Genericode
+    (SimpleCodeList) [2] to CTS2 1.1 EntityList [4]
   
 * syntaxbinding.xsl: A XSL-T script for creating the syntax binding
   specification for a XML Schema Definition (XSD). This scripts works
@@ -26,3 +34,4 @@ Up to now, the following tools are provided:
 [1] http://www.cenbii.eu
 [2] http://docs.oasis-open.org/codelist/ns/genericode/1.0/
 [3] https://joinup.ec.europa.eu/asset/adms/home
+[4] https://github.com/cts2/cts2-specification
