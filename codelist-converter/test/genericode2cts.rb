@@ -36,32 +36,49 @@ class Cts < Test::Unit::TestCase
 		return xslt.serve;
 	end
 
-	def do_xslt_list(data)
-		return do_xslt(data, "../genericode2cts-entitylist.xsl")
+	def do_xslt_list(data, version)
+		return do_xslt(data, "../genericode2cts" + version.sub(/\./, "") + "-entitylist.xsl")
 	end
 
-	def do_xslt_directory(data)
-		return do_xslt(data, "../genericode2cts-entitydirectory.xsl")
+	def do_xslt_directory(data, version)
+		return do_xslt(data, "../genericode2cts" + version.sub(/\./, "") + "-entitydirectory.xsl")
 	end
 
-	def test_list_validate
-		out = do_xslt_list("data/test.gc")
+	def do_list_validate(version)
+		out = do_xslt_list("data/test.gc", version)
 		result = XML::Document.string(out)
 
-		xsd = XML::Document.file("../../vendor/cts2-1.1/entity/Entity.xsd")
+		xsd = XML::Document.file("../../vendor/cts2-" + version + "/entity/Entity.xsd")
 		schema = XML::Schema.document(xsd)
 
 		result.validate_schema(schema)
 	end
 
-	def test_directory_validate
-		out = do_xslt_directory("data/test.gc")
+	def do_directory_validate(version)
+		out = do_xslt_directory("data/test.gc", version)
 		result = XML::Document.string(out)
 
-		xsd = XML::Document.file("../../vendor/cts2-1.1/entity/Entity.xsd")
+		xsd = XML::Document.file("../../vendor/cts2-" + version + "/entity/Entity.xsd")
 		schema = XML::Schema.document(xsd)
 
 		result.validate_schema(schema)
 	end
+
+	def test_cts11_directory_validate
+		do_directory_validate("1.1")
+	end
+
+	def test_cts11_list_validate
+		do_list_validate("1.1")
+	end
+
+	def test_cts10_directory_validate
+		do_directory_validate("1.0")
+	end
+
+	def test_cts10_list_validate
+		do_list_validate("1.0")
+	end
+
 
 end
