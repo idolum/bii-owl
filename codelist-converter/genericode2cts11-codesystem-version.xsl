@@ -27,8 +27,8 @@ THE SOFTWARE.
 	encoding="utf-8"
 	xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 	xmlns:gc="http://docs.oasis-open.org/codelist/ns/genericode/1.0/"
-	xmlns:cts="http://schema.omg.org/spec/CTS2/1.0/CodeSystem"
-	xmlns:cts-core="http://schema.omg.org/spec/CTS2/1.0/Core">
+	xmlns:cts="http://www.omg.org/spec/CTS2/1.1/CodeSystemVersion"
+	xmlns:cts-core="http://www.omg.org/spec/CTS2/1.1/Core">
 
 <xsl:output method="xml" encoding="utf-8" />
 
@@ -36,7 +36,7 @@ THE SOFTWARE.
 <xsl:param name="renderUri" select="''" />
 <xsl:param name="accessDate" select="'1970-01-01T00:00:00Z'" />
 
-<xsl:include href="cts10-core.xsl" />
+<xsl:include href="cts11-core.xsl" />
 
 <xsl:variable
 	name="codeSystemUri"
@@ -55,7 +55,7 @@ THE SOFTWARE.
 	select="$renderUri" />
 	
 <xsl:template match="/">
-	<cts:CodeSystemCatalogEntryMsg>
+	<cts:CodeSystemVersionCatalogEntryMsg>
 		
 		<xsl:call-template name="generate-heading">
 			<xsl:with-param name="resourceRoot" select="$renderUri" />
@@ -71,7 +71,7 @@ THE SOFTWARE.
 		
 		<xsl:apply-templates select="gc:CodeList" />
 		
-	</cts:CodeSystemCatalogEntryMsg>
+	</cts:CodeSystemVersionCatalogEntryMsg>
 </xsl:template>
 
 <xsl:template match="gc:CodeList">
@@ -86,48 +86,40 @@ THE SOFTWARE.
 		name="codeSystemVersion"
 		select="/gc:CodeList/Identification/Version" />
 		
-	<cts:codeSystemCatalogEntry
-		about="{$codeSystemUri}"
-		codeSystemName="{$codeSystemName}">
-		<cts:versions>
-			<xsl:call-template name="codesystem-versions-uri">
+	<cts:codeSystemVersionCatalogEntry
+		about="{$codeSystemVersionUri}"
+		codeSystemVersionName="{$codeSystemVersionUri}"
+		formalName="{$codeSystemName}"
+		documentURI="{$codeSystemUri}">
+		
+		<cts-core:sourceAndNotation>
+		</cts-core:sourceAndNotation>
+		
+		<cts:versionOf uri="{$codeSystemUri}">
+			<xsl:attribute name="href">
+				<xsl:value-of select="$codeSystemRenderUri" />
+				<xsl:call-template name="codesystem-uri">
+					<xsl:with-param
+						name="codeSystemId"
+						select="$codeSystemName" />
+				</xsl:call-template>
+			</xsl:attribute>
+			
+			<xsl:value-of select="$codeSystemName" />
+		</cts:versionOf>
+		
+		<cts:entityDescriptions>
+			<xsl:call-template name="codesystem-entities-uri">
 				<xsl:with-param
 					name="codeSystemId"
 					select="$codeSystemName" />
+				<xsl:with-param
+					name="codeSystemVersion"
+					select="$codeSystemVersion" />
 			</xsl:call-template>
-		</cts:versions>
-		<cts:currentVersion>
-			<cts-core:version uri="{$codeSystemVersionUri}">
-				
-				<xsl:attribute name="href">
-					<xsl:value-of select="$codeSystemRenderUri" />
-					<xsl:call-template name="codesystem-version-uri">
-						<xsl:with-param
-							name="codeSystemId"
-							select="$codeSystemName" />
-						<xsl:with-param
-							name="codeSystemVersion"
-							select="$codeSystemVersion" />
-					</xsl:call-template>
-				</xsl:attribute>
-				
-				<xsl:value-of select="$codeSystemVersion" />
-			</cts-core:version>
-			<cts-core:codeSystem uri="{$codeSystemUri}">
-				
-				<xsl:attribute name="href">
-					<xsl:value-of select="$codeSystemRenderUri" />
-					<xsl:call-template name="codesystem-uri">
-						<xsl:with-param
-							name="codeSystemId"
-							select="$codeSystemName" />
-					</xsl:call-template>
-				</xsl:attribute>
-				
-				<xsl:value-of select="$codeSystemName" />
-			</cts-core:codeSystem>
-		</cts:currentVersion>
-	</cts:codeSystemCatalogEntry>
+		</cts:entityDescriptions>
+		
+	</cts:codeSystemVersionCatalogEntry>
 	
 </xsl:template>
 

@@ -51,5 +51,15 @@ THE SOFTWARE.
 	<xsl:text>/version/</xsl:text>
 	<xsl:value-of select="$codeSystemVersion" />
 </xsl:template>
+
+<xsl:template name="codesystem-entities-uri">
+	<xsl:param name="codeSystemId" select="''" />
+	<xsl:param name="codeSystemVersion" select="''" />
+	<xsl:call-template name="codesystem-version-uri">
+		<xsl:with-param name="codeSystemId" select="$codeSystemId" />
+		<xsl:with-param name="codeSystemVersion" select="$codeSystemVersion" />
+	</xsl:call-template>
+	<xsl:text>/entities</xsl:text>
+</xsl:template>
 	
 </xsl:stylesheet>
