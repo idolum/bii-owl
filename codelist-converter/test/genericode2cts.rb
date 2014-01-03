@@ -143,10 +143,12 @@ class Cts < Test::Unit::TestCase
 		assert_equal name.count, 1
 		assert_equal name.first.value, "http://doesnotexist.local/ABC-1.0/Code1"
 		
-		name = result.find("//cts:entry[1]/@href", namespaces)
-		assert_equal name.count, 1
-		assert_equal name.first.value, "http://doesnotexist.local/codesystem/TestCode/version/1.0/entity/Code1"
-		
+		assert_attribute(
+			result,
+			"//cts:entry[1]/@href",
+			namespaces,
+			"http://doesnotexist.local/codesystem/TestCode/version/1.0/entity/Code1")
+					
 		name = result.find("//cts:entry[2]/@about", namespaces)
 		assert_equal name.count, 1
 		assert_equal name.first.value, "http://doesnotexist.local/ABC-1.0/Code2"

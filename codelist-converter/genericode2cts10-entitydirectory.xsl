@@ -35,12 +35,20 @@ THE SOFTWARE.
 
 <xsl:output method="xml" encoding="utf-8" />
 
+<xsl:include href="cts10-core.xsl" />
+
 <xsl:param name="canonicalUri" select="''" />
 <xsl:param name="renderUri" select="''" />
 <xsl:param name="accessDate" select="'1970-01-01T00:00:00Z'" />
 
 <xsl:variable
 	name="codelistUri"
+	select="
+		concat(
+			$canonicalUri,
+			/gc:CodeList/Identification/CanonicalVersionUri)" />
+<xsl:variable
+	name="codeSystemVersionUri"
 	select="
 		concat(
 			$canonicalUri,
@@ -59,6 +67,13 @@ THE SOFTWARE.
 
 <xsl:template match="SimpleCodeList">
 	
+	<xsl:variable
+		name="codelistName"
+		select="/gc:CodeList/Identification/ShortName" />
+	<xsl:variable
+		name="codelistVersion"
+		select="/gc:CodeList/Identification/Version" />
+		
 	<!-- Name of the column with the code -->
 	<xsl:variable name="key">
 		<xsl:value-of
@@ -81,24 +96,21 @@ THE SOFTWARE.
 		
 		<xsl:copy-of select="exslt:node-set($ns)/*/namespace::bii" />
 		
-		<cts-core:heading>
-			<cts-core:resourceRoot>
-				<xsl:value-of select="$renderUri" />
-			</cts-core:resourceRoot>
-			<cts-core:resourceURI>
-				<xsl:text>codesystem/</xsl:text>
-				<xsl:value-of
-					select="/gc:CodeList/Identification/ShortName" />
-				<xsl:text>/version/</xsl:text>
-				<xsl:value-of
-					select="/gc:CodeList/Identification/Version" />
-				<xsl:text>/entities</xsl:text>
-			</cts-core:resourceURI>
-			<cts-core:accessDate>
-				<xsl:value-of select="$accessDate" />
-			</cts-core:accessDate>
-		</cts-core:heading>
-
+		<xsl:call-template name="generate-heading">
+			<xsl:with-param name="resourceRoot" select="$renderUri" />
+			<xsl:with-param name="resourceUri">
+				<xsl:call-template name="codesystem-entities-uri">
+					<xsl:with-param
+						name="codeSystemId"
+						select="/gc:CodeList/Identification/ShortName" />
+					<xsl:with-param
+						name="codeSystemVersion"
+						select="/gc:CodeList/Identification/Version" />
+				</xsl:call-template>
+			</xsl:with-param>
+			<xsl:with-param name="accessDate" select="$accessDate" />
+		</xsl:call-template>
+		
 		<xsl:apply-templates select="Row">
 			<xsl:with-param name="key" select="$key" />
 		</xsl:apply-templates>
@@ -120,9 +132,6 @@ THE SOFTWARE.
 		name="entityUri"
 		select="concat($codelistUri, '/', $entityId)" />
 	<xsl:variable
-		name="entityRenderUri"
-		select="concat($codelistRenderUri, '/', $entityId)" />
-	<xsl:variable
 		name="codelistName"
 		select="/gc:CodeList/Identification/ShortName" />
 	<xsl:variable
@@ -135,14 +144,17 @@ THE SOFTWARE.
 
 		<xsl:attribute name="href">
 			<xsl:value-of select="$renderUri" />
-			<xsl:text>codesystem/</xsl:text>
-			<xsl:value-of
-				select="$codelistName" />
-			<xsl:text>/version/</xsl:text>
-			<xsl:value-of
-				select="$codelistVersion" />
-			<xsl:text>/entity/</xsl:text>
-			<xsl:value-of select="$entityId" />
+			<xsl:call-template name="codesystem-version-entity-uri">
+				<xsl:with-param
+					name="codeSystemId"
+					select="$codelistName" />
+				<xsl:with-param
+					name="codeSystemVersion"
+					select="$codelistVersion" />
+				<xsl:with-param
+					name="entityId"
+					select="$entityId" />
+			</xsl:call-template>
 		</xsl:attribute>
 		
 		<cts-core:name>
@@ -156,13 +168,34 @@ THE SOFTWARE.
 		
 		<cts-core:knownEntityDescription>
 			<cts-core:describingCodeSystemVersion>
-				<cts-core:version>
+				<cts-core:version uri="${codeSystemVersionUri}">
+					
+					<xsl:attribute name="href">
+						<xsl:value-of select="$renderUri" />
+						<xsl:call-template name="codesystem-version-uri">
+							<xsl:with-param
+								name="codeSystemId"
+								select="$codelistName" />
+							<xsl:with-param
+								name="codeSystemVersion"
+								select="$codelistVersion" />
+						</xsl:call-template>
+					</xsl:attribute>
+					
 					<xsl:value-of
 						select="$codelistVersion" />
 				</cts-core:version>
-				<cts-core:codeSystem>
-					<xsl:value-of
-						select="$codelistName" />
+				<cts-core:codeSystem uri="{$codelistUri}">
+					
+					<xsl:attribute name="href">
+						<xsl:call-template name="codesystem-uri">
+							<xsl:with-param
+								name="codeSystemId"
+								select="$codelistName" />
+						</xsl:call-template>
+					</xsl:attribute>
+					
+					<xsl:value-of select="$codelistName" />
 				</cts-core:codeSystem>
 			</cts-core:describingCodeSystemVersion>
 			<cts-core:designation>

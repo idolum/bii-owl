@@ -26,7 +26,7 @@ THE SOFTWARE.
 	version="1.0"
 	encoding="utf-8"
 	xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-	
+
 <xsl:template name="codesystem-uri">
 	<xsl:param name="codeSystemId" select="''" />
 	<xsl:text>codesystem/</xsl:text>
@@ -61,5 +61,17 @@ THE SOFTWARE.
 	</xsl:call-template>
 	<xsl:text>/entities</xsl:text>
 </xsl:template>
-	
+
+<xsl:template name="codesystem-version-entity-uri">
+	<xsl:param name="codeSystemId" select="''" />
+	<xsl:param name="codeSystemVersion" select="''" />
+	<xsl:param name="entityId" select="''" />
+	<xsl:call-template name="codesystem-version-uri">
+		<xsl:with-param name="codeSystemId" select="$codeSystemId" />
+		<xsl:with-param name="codeSystemVersion" select="$codeSystemVersion" />
+	</xsl:call-template>
+	<xsl:text>/entity/</xsl:text>
+	<xsl:value-of select="$entityId" />
+</xsl:template>
+
 </xsl:stylesheet>
