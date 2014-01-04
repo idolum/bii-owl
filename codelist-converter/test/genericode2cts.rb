@@ -351,6 +351,102 @@ class Cts < Test::Unit::TestCase
 			"codesystem/TestCode/version/1.0/entities")
 	end	
 	
+	def do_assert_entity(version, namespaces)
+		out = do_xslt_entity("data/test.gc", version)
+		result = XML::Document.string(out)
+	
+		do_assert_heading(
+			result,
+			namespaces,
+			"codesystem/TestCode/version/1.0/entity/Code1")
+		
+		assert_count(
+			result,
+			"//cts:namedEntity",
+			namespaces,
+			1)
+			
+		assert_text_node(
+			result,
+			"//cts:namedEntity/cts:entityID/cts-core:namespace",
+			namespaces,
+			"bii")
+		assert_text_node(
+			result,
+			"//cts:namedEntity/cts:entityID/cts-core:name",
+			namespaces,
+			"Code1")
+			
+		assert_attribute(
+			result,
+			"//cts:namedEntity/cts:describingCodeSystemVersion/cts-core:version/@uri",
+			namespaces,
+			"http://doesnotexist.local/ABC-1.0")
+		assert_attribute(
+			result,
+			"//cts:namedEntity/cts:describingCodeSystemVersion/cts-core:version/@href",
+			namespaces,
+			"http://doesnotexist.local/codesystem/TestCode/version/1.0")
+		assert_text_node(
+			result,
+			"//cts:namedEntity/cts:describingCodeSystemVersion/cts-core:version",
+			namespaces,
+			"1.0")
+			
+		assert_attribute(
+			result,
+			"//cts:namedEntity/cts:describingCodeSystemVersion/cts-core:codeSystem/@uri",
+			namespaces,
+			"http://doesnotexist.local/ABC")
+		assert_attribute(
+			result,
+			"//cts:namedEntity/cts:describingCodeSystemVersion/cts-core:codeSystem/@href",
+			namespaces,
+			"http://doesnotexist.local/codesystem/TestCode")
+		assert_text_node(
+			result,
+			"//cts:namedEntity/cts:describingCodeSystemVersion/cts-core:codeSystem",
+			namespaces,
+			"TestCode")
+			
+		assert_attribute(
+			result,
+			"//cts:namedEntity/cts:designation/@designationRole",
+			namespaces,
+			"PREFERRED")
+		assert_attribute(
+			result,
+			"//cts:namedEntity/cts:designation/@assertedInCodeSystemVersion",
+			namespaces,
+			"1.0")
+		assert_text_node(
+			result,
+			"//cts:namedEntity/cts:designation/cts-core:value",
+			namespaces,
+			"First Code")
+			
+		assert_text_node(
+			result,
+			"//cts:namedEntity/cts:entityType[1]/cts-core:namespace",
+			namespaces,
+			"skos")
+		assert_text_node(
+			result,
+			"//cts:namedEntity/cts:entityType[1]/cts-core:name",
+			namespaces,
+			"Concept")
+		assert_text_node(
+			result,
+			"//cts:namedEntity/cts:entityType[2]/cts-core:namespace",
+			namespaces,
+			"adms")
+		assert_text_node(
+			result,
+			"//cts:namedEntity/cts:entityType[2]/cts-core:name",
+			namespaces,
+			"Item")
+	end
+	
 	def test_cts10_codesystem
 		namespaces = [
 			'cts:http://schema.omg.org/spec/CTS2/1.0/CodeSystem',
@@ -405,5 +501,21 @@ class Cts < Test::Unit::TestCase
 			'cts-core:http://www.omg.org/spec/CTS2/1.1/Core'
 		]
 		do_assert_codesystem_version("1.1", namespaces)
+	end
+	
+	def test_cts10_entity
+		namespaces = [
+			'cts:http://schema.omg.org/spec/CTS2/1.0/Entity',
+			'cts-core:http://schema.omg.org/spec/CTS2/1.0/Core'
+		]
+		do_assert_entity("1.0", namespaces)
+	end
+	
+	def test_cts11_entity
+		namespaces = [
+			'cts:http://www.omg.org/spec/CTS2/1.1/Entity',
+			'cts-core:http://www.omg.org/spec/CTS2/1.1/Core'
+		]
+		do_assert_entity("1.1", namespaces)
 	end
 end

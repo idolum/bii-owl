@@ -44,10 +44,17 @@ THE SOFTWARE.
 	select="
 		concat(
 			$canonicalUri,
-			/gc:CodeList/Identification/CanonicalVersionUri)" />
+			/gc:CodeList/Identification/CanonicalUri)" />
 <xsl:variable
 	name="codelistRenderUri"
 	select="concat($renderUri, '/')" />
+	
+<xsl:variable
+	name="codeSystemVersionUri"
+	select="
+		concat(
+			$canonicalUri,
+			/gc:CodeList/Identification/CanonicalVersionUri)" />
 	
 <xsl:template match="/">
 	<xsl:apply-templates select="gc:CodeList" />
@@ -81,8 +88,115 @@ THE SOFTWARE.
 </xsl:template>
 
 <xsl:template match="SimpleCodeList">
+	
+	<!-- Name of the column with the code -->
+	<xsl:variable name="key">
+		<xsl:value-of
+			select="../ColumnSet/Key/ColumnRef/@Ref" />
+	</xsl:variable>
+	
 	<cts:EntityDescription>
+				
+		<xsl:apply-templates select="Row[Value/SimpleValue=$entityId]">
+			<xsl:with-param name="key" select="$key" />
+		</xsl:apply-templates>
+		
 	</cts:EntityDescription>
+</xsl:template>
+
+<xsl:template match="Row">
+	<xsl:param name="key" />
+	
+	<xsl:variable
+		name="codelistName"
+		select="/gc:CodeList/Identification/ShortName" />
+	<xsl:variable
+		name="codelistVersion"
+		select="/gc:CodeList/Identification/Version" />
+		
+	<xsl:variable
+		name="entityName"
+		select="Value[@ColumnRef!=$key]/SimpleValue" />
+	<xsl:variable
+		name="entityUri"
+		select="concat($codelistUri, '/', $entityId)" />
+				
+	<cts:namedEntity about="{$entityUri}" entryState="ACTIVE">
+		
+		<cts:entityID>
+			<xsl:call-template name="generate-scoped-entity-name">
+				<xsl:with-param name="namespace">
+					<xsl:text>bii</xsl:text>
+				</xsl:with-param>
+				<xsl:with-param name="name" select="$entityId" />
+			</xsl:call-template>
+		</cts:entityID>
+		
+		<cts:describingCodeSystemVersion>
+			<cts-core:version uri="{$codeSystemVersionUri}">
+				
+				<xsl:attribute name="href">
+					<xsl:value-of select="$renderUri" />
+					<xsl:call-template name="codesystem-version-uri">
+						<xsl:with-param
+							name="codeSystemId"
+							select="$codelistName" />
+						<xsl:with-param
+							name="codeSystemVersion"
+							select="$codelistVersion" />
+					</xsl:call-template>
+				</xsl:attribute>
+				
+				<xsl:value-of
+					select="$codelistVersion" />
+			</cts-core:version>
+			<cts-core:codeSystem uri="{$codelistUri}">
+
+				<xsl:attribute name="href">
+					<xsl:value-of select="$renderUri" />
+					<xsl:call-template name="codesystem-uri">
+						<xsl:with-param
+							name="codeSystemId"
+							select="$codelistName" />
+					</xsl:call-template>
+				</xsl:attribute>
+				
+				<xsl:value-of select="$codelistName" />
+			</cts-core:codeSystem>
+		</cts:describingCodeSystemVersion>
+		
+		<cts:designation
+			designationRole="PREFERRED"
+			assertedInCodeSystemVersion="{$codelistVersion}">
+			<cts-core:value>
+				<xsl:value-of select="$entityName" />
+			</cts-core:value>
+		</cts:designation>
+		
+		<cts:entityType
+			uri="http://www.w3.org/2004/02/skos/core#Concept">
+			<xsl:call-template name="generate-scoped-entity-name">
+				<xsl:with-param name="namespace">
+					<xsl:text>skos</xsl:text>
+				</xsl:with-param>
+				<xsl:with-param name="name">
+					<xsl:text>Concept</xsl:text>
+				</xsl:with-param>
+			</xsl:call-template>
+		</cts:entityType>
+		
+		<cts:entityType uri="http://www.w3.org/ns/adms#Item">
+			<xsl:call-template name="generate-scoped-entity-name">
+				<xsl:with-param name="namespace">
+					<xsl:text>adms</xsl:text>
+				</xsl:with-param>
+				<xsl:with-param name="name">
+					<xsl:text>Item</xsl:text>
+				</xsl:with-param>
+			</xsl:call-template>
+		</cts:entityType>
+		
+	</cts:namedEntity>
 </xsl:template>
 
 <xsl:template match="*|@*">

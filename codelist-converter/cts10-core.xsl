@@ -51,4 +51,17 @@ THE SOFTWARE.
 			
 </xsl:template>
 
+<xsl:template name="generate-scoped-entity-name">
+	<xsl:param name="namespace" />
+	<xsl:param name="name" />
+	
+	<cts-core:namespace>
+		<xsl:value-of select="$namespace" />
+	</cts-core:namespace>
+	<cts-core:name>
+		<xsl:value-of select="$name" />
+	</cts-core:name>
+
+</xsl:template>
+
 </xsl:stylesheet>
