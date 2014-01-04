@@ -69,6 +69,10 @@ class Cts < Test::Unit::TestCase
 		return do_xslt(data, "../genericode2cts" + version.sub(/\./, "") + "-codesystem-version.xsl")
 	end
 	
+	def do_xslt_entity(data, version)
+		return do_xslt(data, "../genericode2cts" + version.sub(/\./, "") + "-entity.xsl")
+	end
+	
 	def do_codesystem_validate(version)
 		out = do_xslt_codesystem("data/test.gc", version)
 		result = XML::Document.string(out)
@@ -109,6 +113,16 @@ class Cts < Test::Unit::TestCase
 		result.validate_schema(schema)
 	end
 
+	def do_entity_validate(version)
+		out = do_xslt_entity("data/test.gc", version)
+		result = XML::Document.string(out)
+
+		xsd = XML::Document.file("../../vendor/cts2-" + version + "/entity/Entity.xsd")
+		schema = XML::Schema.document(xsd)
+
+		result.validate_schema(schema)
+	end
+	
 	def test_cts11_directory_validate
 		do_directory_validate("1.1")
 	end
@@ -367,6 +381,14 @@ class Cts < Test::Unit::TestCase
 
 	def test_cts11_codesystem_version_validate
 		do_codesystem_version_validate("1.1")
+	end
+	
+	def test_cts10_entity_validate
+		do_entity_validate("1.0")
+	end
+	
+	def test_cts11_entity_validate
+		do_entity_validate("1.1")
 	end
 	
 	def test_cts10_codesystem_version
