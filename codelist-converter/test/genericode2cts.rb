@@ -144,7 +144,7 @@ class Cts < Test::Unit::TestCase
 
 		result = XML::Document.string(out)
 		
-		do_assert_heading(result, namespaces, "codesystem/TestCode/version/1.0/entities")
+		do_assert_heading(result, namespaces, "codesystem/TestCode/version/100/entities")
 		
 		date = result.find("//cts-core:accessDate", namespaces)
 		assert_equal date.count, 1
@@ -161,7 +161,7 @@ class Cts < Test::Unit::TestCase
 			result,
 			"//cts:entry[1]/@href",
 			namespaces,
-			"http://doesnotexist.local/codesystem/TestCode/version/1.0/entity/Code1")
+			"http://doesnotexist.local/codesystem/TestCode/version/100/entity/Code1")
 					
 		name = result.find("//cts:entry[2]/@about", namespaces)
 		assert_equal name.count, 1
@@ -169,7 +169,7 @@ class Cts < Test::Unit::TestCase
 		
 		name = result.find("//cts:entry[2]/@href", namespaces)
 		assert_equal name.count, 1
-		assert_equal name.first.value, "http://doesnotexist.local/codesystem/TestCode/version/1.0/entity/Code2"
+		assert_equal name.first.value, "http://doesnotexist.local/codesystem/TestCode/version/100/entity/Code2"
 		
 		name = result.find("//cts:entry[1]/cts-core:name", namespaces)
 		assert_equal name.count, 1
@@ -276,7 +276,7 @@ class Cts < Test::Unit::TestCase
 			result,
 			"/cts:CodeSystemCatalogEntryMsg/cts:codeSystemCatalogEntry/cts:currentVersion/cts-core:version/@href",
 			namespaces,
-			"http://doesnotexist.local/codesystem/TestCode/version/1.0")
+			"http://doesnotexist.local/codesystem/TestCode/version/100")
 			
 		assert_text_node(
 			result,
@@ -348,7 +348,7 @@ class Cts < Test::Unit::TestCase
 				+ "cts:codeSystemVersionCatalogEntry/" \
 				+ "cts:entityDescriptions",
 			namespaces,
-			"codesystem/TestCode/version/1.0/entities")
+			"codesystem/TestCode/version/100/entities")
 	end	
 	
 	def do_assert_entity(version, namespaces)
@@ -358,7 +358,7 @@ class Cts < Test::Unit::TestCase
 		do_assert_heading(
 			result,
 			namespaces,
-			"codesystem/TestCode/version/1.0/entity/Code1")
+			"codesystem/TestCode/version/100/entity/Code1")
 		
 		assert_count(
 			result,
@@ -386,7 +386,7 @@ class Cts < Test::Unit::TestCase
 			result,
 			"//cts:namedEntity/cts:describingCodeSystemVersion/cts-core:version/@href",
 			namespaces,
-			"http://doesnotexist.local/codesystem/TestCode/version/1.0")
+			"http://doesnotexist.local/codesystem/TestCode/version/100")
 		assert_text_node(
 			result,
 			"//cts:namedEntity/cts:describingCodeSystemVersion/cts-core:version",

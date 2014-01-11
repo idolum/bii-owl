@@ -31,11 +31,10 @@ THE SOFTWARE.
 	xmlns:cts-core="http://schema.omg.org/spec/CTS2/1.0/Core"
 	xmlns:exslt="http://exslt.org/common"
 	extension-element-prefixes="exslt">
-	
 
 <xsl:output method="xml" encoding="utf-8" />
 
-<xsl:include href="cts10-core.xsl" />
+<xsl:include href="http://idolum.caelum.uberspace.de/xslt/cts10-core.xsl" />
 
 <xsl:param name="canonicalUri" select="''" />
 <xsl:param name="renderUri" select="''" />
@@ -103,9 +102,13 @@ THE SOFTWARE.
 					<xsl:with-param
 						name="codeSystemId"
 						select="/gc:CodeList/Identification/ShortName" />
-					<xsl:with-param
-						name="codeSystemVersion"
-						select="/gc:CodeList/Identification/Version" />
+					<xsl:with-param name="codeSystemVersion">
+						<xsl:call-template name="calculate-version">
+							<xsl:with-param
+								name="version"
+								select="/gc:CodeList/Identification/Version" />
+						</xsl:call-template>
+					</xsl:with-param>
 				</xsl:call-template>
 			</xsl:with-param>
 			<xsl:with-param name="accessDate" select="$accessDate" />
@@ -134,10 +137,14 @@ THE SOFTWARE.
 	<xsl:variable
 		name="codelistName"
 		select="/gc:CodeList/Identification/ShortName" />
-	<xsl:variable
-		name="codelistVersion"
-		select="/gc:CodeList/Identification/Version" />
-
+	<xsl:variable name="codelistVersion">
+		<xsl:call-template name="calculate-version">
+			<xsl:with-param
+				name="version"
+				select="/gc:CodeList/Identification/Version" />
+		</xsl:call-template>
+	</xsl:variable>
+				
 	<cts:entry
 		about="{$entityUri}"
 		resourceName="{$entityId}">
@@ -168,7 +175,7 @@ THE SOFTWARE.
 		
 		<cts-core:knownEntityDescription>
 			<cts-core:describingCodeSystemVersion>
-				<cts-core:version uri="${codeSystemVersionUri}">
+				<cts-core:version uri="{$codeSystemVersionUri}">
 					
 					<xsl:attribute name="href">
 						<xsl:value-of select="$renderUri" />
@@ -183,7 +190,7 @@ THE SOFTWARE.
 					</xsl:attribute>
 					
 					<xsl:value-of
-						select="$codelistVersion" />
+						select="/gc:CodeList/Identification/Version" />
 				</cts-core:version>
 				<cts-core:codeSystem uri="{$codelistUri}">
 					

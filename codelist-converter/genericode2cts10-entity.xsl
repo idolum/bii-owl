@@ -85,9 +85,13 @@ THE SOFTWARE.
 					<xsl:with-param
 						name="codeSystemId"
 						select="/gc:CodeList/Identification/ShortName" />
-					<xsl:with-param
-						name="codeSystemVersion"
-						select="/gc:CodeList/Identification/Version" />
+					<xsl:with-param name="codeSystemVersion">
+						<xsl:call-template name="calculate-version">
+							<xsl:with-param
+								name="version"
+								select="/gc:CodeList/Identification/Version" />
+						</xsl:call-template>
+					</xsl:with-param>
 					<xsl:with-param
 						name="entityId"
 						select="$entityId" />
@@ -124,9 +128,13 @@ THE SOFTWARE.
 	<xsl:variable
 		name="codelistName"
 		select="/gc:CodeList/Identification/ShortName" />
-	<xsl:variable
-		name="codelistVersion"
-		select="/gc:CodeList/Identification/Version" />
+	<xsl:variable name="codelistVersion">
+		<xsl:call-template name="calculate-version">
+			<xsl:with-param
+				name="version"
+				select="/gc:CodeList/Identification/Version" />
+		</xsl:call-template>
+	</xsl:variable>
 		
 	<xsl:variable
 		name="entityName"
@@ -162,7 +170,7 @@ THE SOFTWARE.
 				</xsl:attribute>
 				
 				<xsl:value-of
-					select="$codelistVersion" />
+					select="/gc:CodeList/Identification/Version" />
 			</cts-core:version>
 			<cts-core:codeSystem uri="{$codelistUri}">
 
@@ -181,7 +189,7 @@ THE SOFTWARE.
 		
 		<cts:designation
 			designationRole="PREFERRED"
-			assertedInCodeSystemVersion="{$codelistVersion}">
+			assertedInCodeSystemVersion="{/gc:CodeList/Identification/Version}">
 			<cts-core:value>
 				<xsl:value-of select="$entityName" />
 			</cts-core:value>

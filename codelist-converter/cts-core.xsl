@@ -74,4 +74,11 @@ THE SOFTWARE.
 	<xsl:value-of select="$entityId" />
 </xsl:template>
 
+<xsl:template name="calculate-version">
+	<xsl:param name="version" select="''" />
+	<xsl:variable name="minor" select="substring-after($version, '.')" />
+	<xsl:variable name="major" select="substring-before($version, '.')" />
+	<xsl:value-of select="(number($major) * 100) + number($minor)" />
+</xsl:template>
+
 </xsl:stylesheet>

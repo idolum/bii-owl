@@ -82,9 +82,13 @@ THE SOFTWARE.
 	<xsl:variable
 		name="codeSystemName"
 		select="/gc:CodeList/Identification/ShortName" />
-	<xsl:variable
-		name="codeSystemVersion"
-		select="/gc:CodeList/Identification/Version" />
+	<xsl:variable name="codeSystemVersion">
+		<xsl:call-template name="calculate-version">
+			<xsl:with-param
+				name="version"
+				select="/gc:CodeList/Identification/Version" />
+		</xsl:call-template>
+	</xsl:variable>
 		
 	<cts:codeSystemCatalogEntry
 		about="{$codeSystemUri}"
@@ -111,7 +115,8 @@ THE SOFTWARE.
 					</xsl:call-template>
 				</xsl:attribute>
 				
-				<xsl:value-of select="$codeSystemVersion" />
+				<xsl:value-of
+					select="/gc:CodeList/Identification/Version" />
 			</cts-core:version>
 			<cts-core:codeSystem uri="{$codeSystemUri}">
 				

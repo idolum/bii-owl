@@ -96,9 +96,13 @@ THE SOFTWARE.
 					<xsl:with-param
 						name="codeSystemId"
 						select="/gc:CodeList/Identification/ShortName" />
-					<xsl:with-param
-						name="codeSystemVersion"
-						select="/gc:CodeList/Identification/Version" />
+					<xsl:with-param name="codeSystemVersion">
+						<xsl:call-template name="calculate-version">
+							<xsl:with-param
+								name="version"
+								select="/gc:CodeList/Identification/Version" />
+						</xsl:call-template>
+					</xsl:with-param>
 				</xsl:call-template>
 			</xsl:with-param>
 			<xsl:with-param name="accessDate" select="$accessDate" />
@@ -130,9 +134,13 @@ THE SOFTWARE.
 	<xsl:variable
 		name="codelistName"
 		select="/gc:CodeList/Identification/ShortName" />
-	<xsl:variable
-		name="codelistVersion"
-		select="/gc:CodeList/Identification/Version" />
+	<xsl:variable name="codelistVersion">
+		<xsl:call-template name="calculate-version">
+			<xsl:with-param
+				name="version"
+				select="/gc:CodeList/Identification/Version" />
+		</xsl:call-template>
+	</xsl:variable>
 	<xsl:variable
 		name="codelistVersionUri"
 		select="''" />
