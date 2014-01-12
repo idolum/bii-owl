@@ -73,10 +73,22 @@ THE SOFTWARE.
 	<xsl:variable name="ns">
 		<xsl:element name="bii:dummy" namespace="{$codelistUri}" />
 	</xsl:variable>
+	<xsl:variable name="adms">
+		<xsl:element
+			name="adms:dummy"
+			namespace="http://www.w3.org/ns/adms" />
+	</xsl:variable>
+	<xsl:variable name="skos">
+		<xsl:element
+			name="skos:dummy"
+			namespace="http://www.w3.org/2004/02/skos/core" />
+	</xsl:variable>
 	
 	<cts:EntityDescriptionMsg>
 		
 		<xsl:copy-of select="exslt:node-set($ns)/*/namespace::bii" />
+		<xsl:copy-of select="exslt:node-set($adms)/*/namespace::adms" />
+		<xsl:copy-of select="exslt:node-set($skos)/*/namespace::skos" />
 		
 		<xsl:call-template name="generate-heading">
 			<xsl:with-param name="resourceRoot" select="$renderUri" />
