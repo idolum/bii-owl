@@ -34,7 +34,7 @@ THE SOFTWARE.
 
 <xsl:output method="xml" encoding="utf-8" />
 
-<xsl:include href="http://idolum.caelum.uberspace.de/xslt/cts10-core.xsl" />
+<xsl:include href="cts10-core.xsl" />
 
 <xsl:param name="canonicalUri" select="''" />
 <xsl:param name="renderUri" select="''" />
