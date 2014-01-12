@@ -91,6 +91,7 @@ THE SOFTWARE.
 		about="{$codeSystemUri}"
 		codeSystemName="{$codeSystemName}">
 		<cts:versions>
+			<xsl:value-of select="$renderUri" />
 			<xsl:call-template name="codesystem-versions-uri">
 				<xsl:with-param
 					name="codeSystemId"

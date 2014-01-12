@@ -195,6 +195,7 @@ THE SOFTWARE.
 				<cts-core:codeSystem uri="{$codelistUri}">
 					
 					<xsl:attribute name="href">
+						<xsl:value-of select="$renderUri" />
 						<xsl:call-template name="codesystem-uri">
 							<xsl:with-param
 								name="codeSystemId"

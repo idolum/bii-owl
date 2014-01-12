@@ -258,7 +258,7 @@ class Cts < Test::Unit::TestCase
 			result,
 			"/cts:CodeSystemCatalogEntryMsg/cts:codeSystemCatalogEntry/cts:versions",
 			namespaces,
-			"codesystem/TestCode/versions")
+			"http://doesnotexist.local/codesystem/TestCode/versions")
 			
 		assert_text_node(
 			result,
@@ -348,7 +348,7 @@ class Cts < Test::Unit::TestCase
 				+ "cts:codeSystemVersionCatalogEntry/" \
 				+ "cts:entityDescriptions",
 			namespaces,
-			"codesystem/TestCode/version/100/entities")
+			"http://doesnotexist.local/codesystem/TestCode/version/100/entities")
 	end	
 	
 	def do_assert_entity(version, namespaces)

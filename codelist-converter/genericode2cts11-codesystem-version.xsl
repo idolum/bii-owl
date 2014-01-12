@@ -113,6 +113,7 @@ THE SOFTWARE.
 		</cts:versionOf>
 		
 		<cts:entityDescriptions>
+			<xsl:value-of select="$renderUri" />
 			<xsl:call-template name="codesystem-entities-uri">
 				<xsl:with-param
 					name="codeSystemId"
