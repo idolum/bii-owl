@@ -65,6 +65,10 @@ class Cts < Test::Unit::TestCase
 		return do_xslt(data, "../genericode2cts" + version.sub(/\./, "") + "-codesystem.xsl")
 	end
 	
+	def do_xslt_codesystem_versions(data, version)
+		return do_xslt(data, "../genericode2cts" + version.sub(/\./, "") + "-codesystem-versions.xsl")
+	end
+	
 	def do_xslt_codesystem_version(data, version)
 		return do_xslt(data, "../genericode2cts" + version.sub(/\./, "") + "-codesystem-version.xsl")
 	end
@@ -85,6 +89,16 @@ class Cts < Test::Unit::TestCase
 	
 	def do_codesystem_version_validate(version)
 		out = do_xslt_codesystem_version("data/test.gc", version)
+		result = XML::Document.string(out)
+
+		xsd = XML::Document.file("../../vendor/cts2-" + version + "/codesystemversion/CodeSystemVersion.xsd")
+		schema = XML::Schema.document(xsd)
+		
+		result.validate_schema(schema)
+	end
+		
+	def do_codesystem_versions_validate(version)
+		out = do_xslt_codesystem_versions("data/test.gc", version)
 		result = XML::Document.string(out)
 
 		xsd = XML::Document.file("../../vendor/cts2-" + version + "/codesystemversion/CodeSystemVersion.xsd")
@@ -447,6 +461,54 @@ class Cts < Test::Unit::TestCase
 			"Item")
 	end
 	
+	def do_assert_codesystem_versions(version, namespaces)
+		out = do_xslt_codesystem_versions("data/test.gc", version)
+		result = XML::Document.string(out)
+		
+		do_assert_heading(
+			result,
+			namespaces,
+			"codesystem/TestCode/versions")
+			
+		assert_count(
+			result,
+			"//cts:entry",
+			namespaces,
+			1)
+			
+		assert_attribute(
+			result,
+			"//cts:entry/@href",
+			namespaces,
+			"http://doesnotexist.local/codesystem/TestCode/version/100")
+		assert_attribute(
+			result,
+			"//cts:entry/@codeSystemVersionName",
+			namespaces,
+			"1.0")
+		assert_attribute(
+			result,
+			"//cts:entry/@documentURI",
+			namespaces,
+			"")
+			
+		assert_attribute(
+			result,
+			"//cts:entry/cts:versionOf/@uri",
+			namespaces,
+			"http://doesnotexist.local/ABC")
+		assert_attribute(
+			result,
+			"//cts:entry/cts:versionOf/@href",
+			namespaces,
+			"http://doesnotexist.local/codesystem/TestCode")
+		assert_text_node(
+			result,
+			"//cts:entry/cts:versionOf",
+			namespaces,
+			"TestCode")
+	end
+	
 	def test_cts10_codesystem
 		namespaces = [
 			'cts:http://schema.omg.org/spec/CTS2/1.0/CodeSystem',
@@ -479,6 +541,14 @@ class Cts < Test::Unit::TestCase
 		do_codesystem_version_validate("1.1")
 	end
 	
+	def test_cts10_codesystem_versions_validate
+		do_codesystem_versions_validate("1.0")
+	end
+
+	def test_cts11_codesystem_versions_validate
+		do_codesystem_versions_validate("1.1")
+	end
+	
 	def test_cts10_entity_validate
 		do_entity_validate("1.0")
 	end
@@ -501,6 +571,22 @@ class Cts < Test::Unit::TestCase
 			'cts-core:http://www.omg.org/spec/CTS2/1.1/Core'
 		]
 		do_assert_codesystem_version("1.1", namespaces)
+	end
+	
+	def test_cts10_codesystem_versions
+		namespaces = [
+			'cts:http://schema.omg.org/spec/CTS2/1.0/CodeSystemVersion',
+			'cts-core:http://schema.omg.org/spec/CTS2/1.0/Core'
+		]
+		do_assert_codesystem_versions("1.0", namespaces)
+	end
+	
+	def test_cts11_codesystem_versions
+		namespaces = [
+			'cts:http://www.omg.org/spec/CTS2/1.1/CodeSystemVersion',
+			'cts-core:http://www.omg.org/spec/CTS2/1.1/Core'
+		]
+		do_assert_codesystem_versions("1.1", namespaces)
 	end
 	
 	def test_cts10_entity

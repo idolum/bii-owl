@@ -20,8 +20,16 @@ Up to now, the following tools are provided:
   - genericode2cts1x-entitydirectory.xsl: OASIS Genericode
     (SimpleCodeList) [2] to CTS2 1.0/1.1 EntityDirectory [4].  Makes
     use of EXSLT Common [5].
+  - genericode2cts1x-entity.xsl: OASIS Genericode
+    (SimpleCodeList) [2] to CTS2 1.0/1.1 EntityDescriptionMsg [4]
   - genericode2cts1x-codesystem.xsl: OASIS Genericode
     (SimpleCodeList) [2] to CTS2 1.0/1.1 CodeSystemCatalogEntry [4]
+  - genericode2cts1x-codesystem-versions.xsl: OASIS Genericode
+    (SimpleCodeList) [2] to CTS2 1.0/1.1
+    CodeSystemVersionCatalogEntryDirectory [4]. (not finished yet)
+  - genericode2cts1x-codesystem-version.xsl: OASIS Genericode
+    (SimpleCodeList) [2] to CTS2 1.0/1.1
+    CodeSystemVersionCatalogEntryMsg [4]
   
 * syntaxbinding.xsl: A XSL-T script for creating the syntax binding
   specification for a XML Schema Definition (XSD). This scripts works
