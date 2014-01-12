@@ -92,7 +92,7 @@ THE SOFTWARE.
 		
 	<cts:codeSystemVersionCatalogEntry
 		about="{$codeSystemVersionUri}"
-		codeSystemVersionName="{$codeSystemVersionUri}"
+		codeSystemVersionName="{/gc:CodeList/Identification/Version}"
 		formalName="{$codeSystemName}"
 		documentURI="{$codeSystemUri}">
 		

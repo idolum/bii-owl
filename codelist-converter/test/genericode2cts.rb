@@ -323,7 +323,7 @@ class Cts < Test::Unit::TestCase
 				+ "cts:codeSystemVersionCatalogEntry/" \
 				+ "@codeSystemVersionName",
 			namespaces,
-			"http://doesnotexist.local/ABC-1.0")
+			"1.0")
 			
 		assert_attribute(
 			result,
