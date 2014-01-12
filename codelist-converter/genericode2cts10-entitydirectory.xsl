@@ -91,7 +91,7 @@ THE SOFTWARE.
 	
 	<cts:EntityDirectory
 		complete="COMPLETE"
-		numEntries="2">
+		numEntries="{count(Row)}">
 		
 		<xsl:copy-of select="exslt:node-set($ns)/*/namespace::bii" />
 		
