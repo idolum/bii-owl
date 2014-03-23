@@ -13,7 +13,9 @@ Up to now, the following tools are provided:
   available:
 
   - genericode2adms.xsl: OASIS Genericode (SimpleCodeList) [2] to ADMS
-    [3] in RDF/XML
+    [3] as RDF/XML
+  - genericode2skos.xsl: OASIS Genericode (SimpleCodeList) [2] to SKOS
+    [6] as RDF/XML
   - genericode2cts1x-entitylist.xsl: OASIS Genericode
     (SimpleCodeList) [2] to CTS2 1.0/1.1 EntityList [4]. Makes use of
     EXSLT Common [5].
@@ -44,3 +46,4 @@ Up to now, the following tools are provided:
 [3] https://joinup.ec.europa.eu/asset/adms/home
 [4] https://github.com/cts2/cts2-specification
 [5] http://www.exslt.org/exsl
+[6] http://www.w3.org/TR/2009/REC-skos-reference-20090818/
