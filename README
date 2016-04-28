@@ -33,6 +33,9 @@ Up to now, the following tools are provided:
     (SimpleCodeList) [2] to CTS2 1.0/1.1
     CodeSystemVersionCatalogEntryMsg [4]
   
+* simterm.pl: A Perl script for calculating the similarity of terms
+  of the Business Term Vocabulary by CEN/WS BII
+
 * syntaxbinding.xsl: A XSL-T script for creating the syntax binding
   specification for a XML Schema Definition (XSD). This scripts works
   with emantic annotations that have to be incoprated to the XSD. These
